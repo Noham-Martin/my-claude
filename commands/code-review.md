@@ -1,5 +1,6 @@
 ---
 description: Code review focused on completeness, quality, and improvements
+argument-hint: --pr <number-or-url>
 allowed-tools: [Read, Glob, Grep, Bash]
 ---
 
@@ -18,8 +19,23 @@ You are reviewing to ensure:
 ---
 
 ## Step 0 — Inputs
-If a diff/PR is available, review it.
-If not, ask for:
+
+### Option A: `--pr <number-or-url>` provided
+If the user passed `--pr`:
+1. Extract the PR identifier (number or full URL).
+2. Fetch PR metadata and diff using the `gh` CLI:
+   - `gh pr view <pr> --json title,body,url,headRefName,baseRefName`
+   - `gh pr diff <pr>`
+3. Review the PR diff (not the current branch).
+
+### Option B: No `--pr` flag
+Review the current branch changes:
+1. Determine the base branch (usually `main` or `master`).
+2. Get the diff: `git diff $(git merge-base HEAD <base>)..HEAD`
+3. List changed files: `git diff --name-only $(git merge-base HEAD <base>)..HEAD`
+
+### Option C: No diff available
+If neither option works, ask for:
 - list of changed files OR a patch/diff
 But still provide the completeness checklist immediately.
 
