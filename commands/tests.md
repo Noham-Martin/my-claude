@@ -1,3 +1,8 @@
+---
+description: Backfill missing tests based on current branch changes
+allowed-tools: [Read, Glob, Grep, Bash, Edit, Write]
+---
+
 # /tests — Backfill missing tests from current branch history
 
 You are running the /tests command.

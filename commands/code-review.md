@@ -1,3 +1,8 @@
+---
+description: Code review focused on completeness, quality, and improvements
+allowed-tools: [Read, Glob, Grep, Bash]
+---
+
 # /code-review — Completeness-first, then quality, then improvements
 
 You are reviewing to ensure:

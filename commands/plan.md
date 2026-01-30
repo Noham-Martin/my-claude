@@ -1,3 +1,8 @@
+---
+description: Generate detailed end-to-end implementation plan
+allowed-tools: [Read, Glob, Grep, Bash]
+---
+
 # /plan — Long, detailed, end-to-end implementation plan
 
 You produce a LONG and DETAILED plan that covers everything required for the feature to work end-to-end.

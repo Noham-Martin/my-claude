@@ -1,3 +1,8 @@
+---
+description: Incrementally fix build errors one at a time
+allowed-tools: [Read, Glob, Grep, Bash, Edit]
+---
+
 # Build and Fix
 
 Incrementally build errors:

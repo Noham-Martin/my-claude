@@ -1,3 +1,9 @@
+---
+description: Import context from dd-pantry folder
+argument-hint: --<folder>
+allowed-tools: [Read, Glob, Grep, Bash]
+---
+
 # /import — Load pantry context from dd-pantry folder
 
 You are running the /import command.

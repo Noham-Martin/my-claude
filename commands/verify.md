@@ -1,4 +1,9 @@
-/verify — Quick project verification (CLI output only)
+---
+description: Quick project verification - checks build, tests, lint, and git status
+allowed-tools: [Read, Glob, Grep, Bash]
+---
+
+# /verify — Quick project verification (CLI output only)
 
 Goal:
 Quickly check whether the current branch is in a good state to be pushed or opened as a PR.

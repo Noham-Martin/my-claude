@@ -1,3 +1,9 @@
+---
+description: Export context to dd-pantry folder
+argument-hint: --<folder>
+allowed-tools: [Read, Glob, Grep, Bash, Write]
+---
+
 # /export — Write new pantry context file into dd-pantry folder
 
 You are running the /export command.

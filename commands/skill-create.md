@@ -1,4 +1,10 @@
-/skill-create — Create a reusable skill from pantry context
+---
+description: Create a reusable skill from pantry context
+argument-hint: --<folder>
+allowed-tools: [Read, Glob, Grep, Bash, Write]
+---
+
+# /skill-create — Create a reusable skill from pantry context
 
 Usage:
 /skill-create --<folder>

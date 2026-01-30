@@ -1,3 +1,8 @@
+---
+description: Extract reusable patterns from current session as skills
+allowed-tools: [Read, Glob, Grep, Bash, Write]
+---
+
 # /learn - Extract Reusable Patterns
 
 Analyze the current session and extract any patterns worth saving as skills.
