@@ -1,5 +1,6 @@
 ---
 description: Generate detailed end-to-end implementation plan
+argument-hint: --<task>
 allowed-tools: [Read, Glob, Grep, Bash]
 ---
 
@@ -7,6 +8,11 @@ allowed-tools: [Read, Glob, Grep, Bash]
 
 You produce a LONG and DETAILED plan that covers everything required for the feature to work end-to-end.
 Assume the user wants an exhaustive checklist they can execute step-by-step.
+
+## Usage
+/plan --<task>
+
+Replace `<task>` with a description of what to plan (e.g., `--add user authentication`, `--refactor checkout flow`).
 
 ## Principles
 - Be comprehensive and explicit. Prefer too much detail over too little.
@@ -16,7 +22,8 @@ Assume the user wants an exhaustive checklist they can execute step-by-step.
 - If you are uncertain about repo boundaries, make your best guess and clearly mark it as an assumption.
 
 ## Inputs
-Use what the user provided. If information is missing, make reasonable assumptions and list them.
+Parse the `--<task>` argument to understand what the user wants planned.
+If information is missing, make reasonable assumptions and list them.
 Do NOT block on questions unless absolutely necessary.
 
 ---
