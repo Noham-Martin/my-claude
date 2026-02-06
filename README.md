@@ -37,10 +37,16 @@ Quick start — jump straight into systematic debugging:
 /debug --login returns 500 on empty password
 ```
 
-The debugger creates a persistent file in `.planning/debug/` with immutable symptoms, ranked hypotheses, and append-only evidence. If you need to stop and come back later, the debug file survives across sessions — just resume it:
+The debugger creates a persistent named file in `.planning/debug/` with immutable symptoms, ranked hypotheses, and append-only evidence. If you need to stop and come back later, the debug file survives across sessions — resume it by name:
 
 ```
-/debug --resume
+/debug --resume --login-500
+```
+
+Or see all your debug sessions:
+
+```
+/debug --list
 ```
 
 For the full bug pipeline (debug + test + review):
@@ -222,7 +228,7 @@ List all checkpoints:
 
 ## Debugging
 
-Debugging is its own workflow, separate from session management. Debug files persist in `.planning/debug/` and survive across sessions automatically.
+Debugging is its own workflow, separate from session management. Debug sessions work like regular sessions — they are named, listable, and resumable by name. Debug files persist in `.planning/debug/` and survive across sessions automatically.
 
 ### Starting a debug session
 
@@ -236,13 +242,48 @@ Creates `.planning/debug/debug-2026-02-06-login-500.md` with:
 - **Evidence** (append-only, gathered step by step)
 - **Resolution** (filled when the root cause is found)
 
+The slug (`login-500`) becomes the session name for listing and resuming.
+
+### Listing debug sessions
+
+When running multiple investigations in parallel:
+
+```
+/debug --list
+```
+
+```
+Debug sessions:
+
+  Active:
+  Name               Date        Status          Description
+  ─────              ────        ──────          ───────────
+  login-500          2026-02-06  investigating   Login returns 500 on empty password
+  cache-miss         2026-02-05  gathering       Redis cache misses on user lookup
+
+  Resolved:
+  auth-loop          2026-02-03  resolved        Auth redirect loop after token refresh
+
+  Total: 3 sessions (2 active, 1 resolved)
+
+Resume a session:  /debug --resume --login-500
+```
+
 ### Resuming a debug session
+
+Resume a specific session by name:
+
+```
+/debug --resume --login-500
+```
+
+Or resume the most recent active one:
 
 ```
 /debug --resume
 ```
 
-Picks up the most recent active debug session. All hypotheses, evidence, and eliminated causes are still there — no context lost.
+All hypotheses, evidence, and eliminated causes are still there — no context lost.
 
 ### After resolving
 
@@ -373,7 +414,9 @@ Always-active guidelines that shape every interaction:
 | Build + test + review + security in one go | `/orchestrate --feature` |
 | Fix a bug end-to-end | `/orchestrate --bugfix` |
 | Debug something | `/debug --<issue>` |
-| Resume a debug session | `/debug --resume` |
+| List debug sessions | `/debug --list` |
+| Resume a debug session by name | `/debug --resume --<name>` |
+| Resume most recent debug session | `/debug --resume` |
 | Run tests for my changes | `/tests` |
 | Fix build errors | `/build-fix` |
 | Quick check before pushing | `/verify` |

@@ -70,10 +70,18 @@ Started: YYYY-MM-DD
 ```
 
 ### Resuming a session
-- Read the latest active (non-resolved) debug file.
+- If a specific name/slug is provided: find `.planning/debug/debug-*-<slug>.md`.
+- If no name: read the most recent active (non-resolved) debug file.
+- Present a context summary: status, symptom count, active hypotheses, last evidence entry.
 - Pick up from where evidence gathering left off.
 - Never modify the Symptoms section.
 - Only append to Evidence.
+
+### Listing sessions
+- Scan `.planning/debug/` and `.planning/debug/resolved/` for all debug files.
+- Extract: slug (from filename), date, status, description (from heading).
+- Group active sessions above resolved.
+- Output as plain text table.
 
 ### Closing a session
 - Set Status to `resolved`.

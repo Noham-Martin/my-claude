@@ -13,6 +13,8 @@ allowed-tools: []
 | `/build-fix` | Incrementally fix build errors one at a time |
 | `/tests` | Backfill missing tests based on current branch changes |
 | `/debug --<issue>` | Systematic debugging with persistent state |
+| `/debug --list` | List all debug sessions (active and resolved) |
+| `/debug --resume [--<name>]` | Resume a debug session (by name or most recent) |
 | `/verify [--quick\|--full\|--pre-pr]` | Quality gate: build, tests, lint, security, git status |
 
 ## Review

@@ -6,12 +6,26 @@ user-invocable: false
 
 # Debug Session Skill
 
-This skill provides the debugging methodology and templates for persistent debug sessions.
+This skill provides the debugging methodology and templates for persistent debug sessions. Debug sessions work like regular sessions — they are named, listable, and resumable by name.
 
 ## Debug File Location
 
 All debug state lives in `.planning/debug/` relative to the project root.
 Resolved sessions move to `.planning/debug/resolved/`.
+
+## Naming Convention
+
+Files are named `debug-YYYY-MM-DD-<slug>.md`. The `<slug>` is the canonical session name used for resume:
+- `/debug --resume --<slug>` resumes a specific session.
+- `/debug --list` shows all sessions with their slugs.
+
+## Session Lifecycle
+
+1. **Start** — `/debug --<issue>` creates a new named debug file.
+2. **During** — the debug file is updated before every action (the file IS the brain).
+3. **List** — `/debug --list` shows all active and resolved sessions.
+4. **Resume** — `/debug --resume --<name>` picks up a specific session. `/debug --resume` picks up the most recent.
+5. **Resolve** — file moves to `.planning/debug/resolved/`.
 
 ## Methodology
 

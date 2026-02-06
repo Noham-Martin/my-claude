@@ -36,7 +36,7 @@ Based on what is found, determine the current situation and suggest the best nex
 **Decision tree:**
 
 1. **Active debug session exists** (file in `.planning/debug/` with status != resolved):
-   → "Active debug session found: <description>. Run `/debug --resume` to continue."
+   → "Active debug session found: <description>. Run `/debug --resume --<name>` to continue." (include the slug from the filename)
 
 2. **Uncommitted changes + tests not run**:
    → "You have uncommitted changes. Run `/verify --quick` before committing."
