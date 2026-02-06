@@ -15,6 +15,7 @@ allowed-tools: []
 | `/debug --<issue>` | Systematic debugging with persistent state |
 | `/debug --list` | List all debug sessions (active and resolved) |
 | `/debug --resume [--<name>]` | Resume a debug session (by name or most recent) |
+| `/debug --delete --<name>` | Delete a debug session |
 | `/verify [--quick\|--full\|--pre-pr]` | Quality gate: build, tests, lint, security, git status |
 
 ## Review
@@ -32,6 +33,7 @@ allowed-tools: []
 | `/session-save [--<label>]` | Save session state for later resumption |
 | `/session-list` | List all saved sessions |
 | `/session-resume [--<label>]` | Restore context from a previous session |
+| `/session-delete --<label>` | Delete a saved session |
 | `/checkpoint --<name>` | Create, list, or restore named git checkpoints |
 
 ## Knowledge

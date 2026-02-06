@@ -1,6 +1,6 @@
 ---
 description: Systematic debugging with persistent state across sessions
-argument-hint: --<issue> | --list | --resume [--<name>]
+argument-hint: --<issue> | --list | --resume [--<name>] | --delete --<name>
 allowed-tools: [Read, Glob, Grep, Bash, Edit, Write]
 ---
 
@@ -13,6 +13,7 @@ Systematic debugging that persists across sessions. Debug state lives in `.plann
 - `/debug --list` — list all debug sessions (active and resolved)
 - `/debug --resume` — resume the most recent active session
 - `/debug --resume --<name>` — resume a specific session by name/slug
+- `/debug --delete --<name>` — delete a debug session by name
 
 ## Process
 
@@ -20,6 +21,7 @@ Systematic debugging that persists across sessions. Debug state lives in `.plann
 
 - If `--list`: skip to the **List sessions** section below.
 - If `--resume`: skip to the **Resume session** section below.
+- If `--delete`: skip to the **Delete session** section below.
 - Otherwise: this is a new debug session — continue to step 1.
 
 ### 1) Check for existing sessions
@@ -203,6 +205,40 @@ Pick up from where the session left off:
 - If `Status: verifying` → verify the fix and close.
 
 Skip to step 4 (Form hypotheses) or step 5 (Gather evidence) depending on status.
+
+---
+
+## Delete session
+
+When invoked with `--delete --<name>`.
+
+### 1) Find the session
+
+Look for `.planning/debug/debug-*-<name>.md` (active) or `.planning/debug/resolved/debug-*-<name>.md` (resolved).
+
+If not found: report "No debug session found matching '<name>'. Run `/debug --list` to see all sessions." and stop.
+
+### 2) Confirm deletion
+
+Show the session details (name, date, status, description) and ask for confirmation:
+
+```
+Delete debug session?
+  Name: <name>
+  Date: <date>
+  Status: <status>
+  Description: <description>
+
+This will permanently delete the debug file. Proceed? (y/n)
+```
+
+### 3) Delete
+
+Delete the file. Report:
+
+```
+Deleted debug session: <name>
+```
 
 ---
 

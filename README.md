@@ -182,6 +182,14 @@ Or resume the most recent one:
 
 Loads the session file, verifies git state hasn't diverged, and suggests next actions.
 
+### Deleting a session
+
+```
+/session-delete --feature-auth
+```
+
+Asks for confirmation, then deletes the session file.
+
 ### Quick status check
 
 ```
@@ -284,6 +292,14 @@ Or resume the most recent active one:
 ```
 
 All hypotheses, evidence, and eliminated causes are still there — no context lost.
+
+### Deleting a debug session
+
+```
+/debug --delete --login-500
+```
+
+Asks for confirmation, then deletes the debug file. Works for both active and resolved sessions.
 
 ### After resolving
 
@@ -417,6 +433,7 @@ Always-active guidelines that shape every interaction:
 | List debug sessions | `/debug --list` |
 | Resume a debug session by name | `/debug --resume --<name>` |
 | Resume most recent debug session | `/debug --resume` |
+| Delete a debug session | `/debug --delete --<name>` |
 | Run tests for my changes | `/tests` |
 | Fix build errors | `/build-fix` |
 | Quick check before pushing | `/verify` |
@@ -425,6 +442,7 @@ Always-active guidelines that shape every interaction:
 | Save my work | `/session-save --<label>` |
 | See all my saved sessions | `/session-list` |
 | Resume a specific session | `/session-resume --<label>` |
+| Delete a session | `/session-delete --<label>` |
 | What should I do next? | `/progress` |
 | Save point before risky change | `/checkpoint --<name>` |
 | Load context from pantry | `/import --<folder>` |
@@ -448,7 +466,7 @@ nohamm-workflow/
 │   ├── debugger.md
 │   ├── security-reviewer.md
 │   └── build-resolver.md
-├── commands/                      # 17 slash commands
+├── commands/                      # 18 slash commands
 ├── hooks/hooks.json               # Hook configuration
 ├── rules/                         # 6 always-active rules
 ├── scripts/                       # Hook helper scripts
