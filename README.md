@@ -52,9 +52,6 @@ Save and restore working context. State lives in `.planning/sessions/`.
 | `/session-resume` | Resume most recent session |
 | `/session-delete --<label>` | Delete a saved session |
 | `/progress` | Quick status check — suggests the ONE next action |
-| `/checkpoint --<name>` | Create a named git save point |
-| `/checkpoint --list` | List all checkpoints |
-| `/checkpoint --restore <name>` | Restore a checkpoint |
 
 ## Pantry
 
@@ -110,7 +107,6 @@ Persistent cross-project knowledge library at `~/dd/dd-pantry/`. Auto-updated by
 .planning/
 ├── STATE.md           # Short-term memory (max 100 lines)
 ├── sessions/          # Session snapshots
-├── checkpoints.md     # Named git save points
 └── debug/             # Debug sessions
     └── resolved/      # Completed debug sessions
 ```

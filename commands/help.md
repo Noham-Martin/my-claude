@@ -34,7 +34,6 @@ allowed-tools: []
 | `/session-list` | List all saved sessions |
 | `/session-resume [--<label>]` | Restore context from a previous session |
 | `/session-delete --<label>` | Delete a saved session |
-| `/checkpoint --<name>` | Create, list, or restore named git checkpoints |
 
 ## Knowledge
 

@@ -12,7 +12,6 @@ This skill provides the templates and conventions for session management across 
 
 - `.planning/STATE.md` — short-term memory (max 100 lines), read at session start.
 - `.planning/sessions/YYYY-MM-DD-<label>.md` — full session snapshots.
-- `.planning/checkpoints.md` — named git checkpoint log.
 
 ## STATE.md
 

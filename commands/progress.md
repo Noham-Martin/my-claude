@@ -20,7 +20,6 @@ Check for and read (if they exist):
 - `.planning/STATE.md` — short-term memory
 - `.planning/sessions/` — latest session file (most recent by date)
 - `.planning/debug/` — any active (non-resolved) debug files
-- `.planning/checkpoints.md` — checkpoint history
 
 ### 2) Check git state
 

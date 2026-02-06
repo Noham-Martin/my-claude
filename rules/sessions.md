@@ -6,7 +6,6 @@ All session state lives in `.planning/` relative to the project root:
 - `.planning/STATE.md` — short-term memory, read at every session start.
 - `.planning/sessions/` — full session snapshots for resumption.
 - `.planning/debug/` — persistent debug sessions.
-- `.planning/checkpoints.md` — named git checkpoints.
 
 ## STATE.md
 
@@ -31,12 +30,6 @@ All session state lives in `.planning/` relative to the project root:
 - Active sessions are files with `Status: gathering|investigating|fixing|verifying`.
 - Resolved sessions are moved to `.planning/debug/resolved/`.
 - Debug files are the single source of truth for debugging — always update the file before taking actions.
-
-## Checkpoints
-
-- Checkpoints combine git state + session context.
-- Use checkpoints before risky operations (refactors, migrations, experimental changes).
-- Checkpoint names must be unique and descriptive.
 
 ## Pantry Integration
 
