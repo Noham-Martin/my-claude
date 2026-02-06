@@ -43,6 +43,13 @@ allowed-tools: []
 | `/export --<folder>` | Export context to dd-pantry |
 | `/skill-create --<folder>` | Create a reusable skill from pantry context |
 
+## Jira
+
+| Command | Description |
+|---------|-------------|
+| `/jira-update --<epic-key> --<pantry-folder \| PR list>` | Update a Jira epic from pantry or PRs |
+| `/jira-create --<pantry-folder>` | Create a Jira epic with tasks from pantry |
+
 ## Meta
 
 | Command | Description |

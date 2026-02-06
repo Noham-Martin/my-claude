@@ -59,6 +59,16 @@ Persistent cross-project knowledge library at `~/dd/dd-pantry/`. Auto-updated by
 | `/learn` | Extract reusable patterns from current session |
 | `/skill-create --<folder>` | Turn pantry notes into a reusable skill |
 
+## Jira
+
+Requires the Atlassian MCP plugin. Tickets are always assigned to Noham Martin with component `backend-ingestion`.
+
+| Command | What it does |
+|---------|-------------|
+| `/jira-update --<epic-key> --<pantry-folder>` | Update epic from pantry context |
+| `/jira-update --<epic-key> --#456 #789` | Update epic from a list of PRs |
+| `/jira-create --<pantry-folder>` | Create a new epic with tasks from pantry |
+
 ## Code
 
 | Command | What it does |
