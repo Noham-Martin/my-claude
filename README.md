@@ -67,9 +67,7 @@ Persistent cross-project knowledge library at `~/dd/dd-pantry/`. Auto-updated by
 | Command | What it does |
 |---------|-------------|
 | `/import --<folder>` | Load context from pantry |
-| `/import --project` | Load context from `.planning/` |
 | `/export --<folder>` | Save context to pantry |
-| `/export --project` | Save context to `.planning/` |
 | `/learn` | Extract reusable patterns from current session |
 | `/skill-create --<folder>` | Turn pantry notes into a reusable skill |
 

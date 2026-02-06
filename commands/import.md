@@ -1,20 +1,18 @@
 ---
-description: Import context from dd-pantry folder or project .planning/ directory
-argument-hint: --<folder> | --project
+description: Import context from dd-pantry folder
+argument-hint: --<folder>
 allowed-tools: [Read, Glob, Grep, Bash]
 ---
 
-# /import — Load context from pantry or project
+# /import — Load context from pantry
 
 You are running the /import command.
 
 ## Usage
 - `/import --<folder>` — import from dd-pantry
-- `/import --project` — import from current project's `.planning/` directory
 
-## Target Paths
-- Pantry: `/Users/noham.martin/dd/dd-pantry/<folder>`
-- Project: `./.planning/` (relative to current working directory)
+## Target Path
+- `/Users/noham.martin/dd/dd-pantry/<folder>`
 
 ## Goals
 - Ensure the target folder exists (create it if missing).
@@ -25,8 +23,7 @@ You are running the /import command.
 ## Process (must follow in order)
 
 ### 1) Resolve target path
-- If `--project` flag: use `./.planning/` relative to the current working directory.
-- Otherwise: parse `<folder>` from `--<folder>` and construct `/Users/noham.martin/dd/dd-pantry/<folder>`.
+- Parse `<folder>` from `--<folder>` and construct `/Users/noham.martin/dd/dd-pantry/<folder>`.
 
 ### 2) Ensure folder exists
 - If the folder does not exist: create it (including parents).

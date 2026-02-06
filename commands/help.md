@@ -40,8 +40,8 @@ allowed-tools: []
 | Command | Description |
 |---------|-------------|
 | `/learn` | Extract reusable patterns from current session |
-| `/import --<folder>` | Import context from dd-pantry or `--project` |
-| `/export --<folder>` | Export context to dd-pantry or `--project` |
+| `/import --<folder>` | Import context from dd-pantry |
+| `/export --<folder>` | Export context to dd-pantry |
 | `/skill-create --<folder>` | Create a reusable skill from pantry context |
 
 ## Meta
