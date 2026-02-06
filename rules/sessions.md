@@ -37,3 +37,30 @@ All session state lives in `.planning/` relative to the project root:
 - Checkpoints combine git state + session context.
 - Use checkpoints before risky operations (refactors, migrations, experimental changes).
 - Checkpoint names must be unique and descriptive.
+
+## Pantry Integration
+
+The pantry (`~/dd/dd-pantry/`) is the persistent cross-project knowledge library. It MUST stay current.
+
+**When to update the pantry:**
+- After creating a PR — export what was built, why, and key decisions.
+- After modifying a PR — export what changed and why.
+- After a code review — export decisions, trade-offs, or patterns discovered.
+- After an orchestration chain completes — export key findings and outcomes.
+- After a session with significant decisions — `/session-save` handles this automatically.
+- After resolving a non-trivial bug — export the debugging pattern via `/learn` or `/export`.
+
+**What belongs in the pantry:**
+- Decisions with rationale and alternatives considered
+- Architecture and design choices
+- Requirements discovered or refined
+- Integration patterns and API contracts
+- Debugging insights and workarounds
+- Trade-offs and their justifications
+
+**What does NOT belong in the pantry:**
+- Ephemeral session state (that goes in `.planning/`)
+- Build logs or test output
+- Trivial fixes or one-off issues
+
+**Rule:** If you are unsure whether something belongs in the pantry, export it. It is better to have too much in the library than to lose knowledge.

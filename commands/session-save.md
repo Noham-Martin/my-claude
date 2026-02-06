@@ -107,13 +107,33 @@ Session: <path to session file>
 
 If STATE.md already exists and exceeds 100 lines after update, truncate older entries (keep the most recent state).
 
-### 5) Confirm
+### 5) Pantry export
+
+The pantry (`~/dd/dd-pantry/`) is the persistent cross-project knowledge library. It MUST stay up to date.
+
+After writing the session file, check if this session produced knowledge worth persisting:
+- **Decisions made** that affect the project beyond this session
+- **Architecture or design choices** with rationale
+- **Learnings** (debugging insights, workarounds, integration patterns)
+- **Requirements discovered** or refined during implementation
+
+If any of the above exist:
+1. Identify the relevant pantry folder. Check if a folder already exists for this project or feature:
+   - List folders in `~/dd/dd-pantry/` and look for a match.
+   - If no match: ask the user which folder to use or whether to create one.
+2. Run the `/export` logic: create a new numbered file in that pantry folder with the decisions, learnings, and context from this session.
+3. Focus the pantry export on **durable knowledge** — not ephemeral session state. The pantry is a library, not a scratchpad.
+
+If nothing worth persisting: skip and note "No pantry-worthy context this session."
+
+### 6) Confirm
 
 Output:
 ```
 Session saved.
   File: .planning/sessions/YYYY-MM-DD-<label>.md
   State: .planning/STATE.md (updated)
+  Pantry: <path to exported file> (or "skipped — no durable context")
 
 To resume later: /session-resume
 ```
@@ -124,3 +144,4 @@ To resume later: /session-resume
 - If unsure about something, mark it as "uncertain" rather than omitting it.
 - Always include file paths and line numbers for in-progress work.
 - Keep STATE.md under 100 lines — it is read at every session start.
+- Always check if the pantry needs updating. The pantry is the persistent library — if decisions were made, it must be updated.

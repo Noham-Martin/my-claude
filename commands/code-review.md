@@ -122,3 +122,15 @@ Choose one:
 - **Approve**
 
 Include top 1–3 reasons.
+
+### 8) Pantry Reminder
+
+After the verdict, remind the user to update the pantry if the review surfaced durable knowledge:
+- Architecture decisions or trade-offs discussed
+- Patterns or anti-patterns identified
+- Requirements clarified or refined
+
+Output:
+```
+Pantry: If this review surfaced decisions or learnings, run /export --<folder> to update your library.
+```

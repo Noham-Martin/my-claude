@@ -118,6 +118,7 @@ A concise checklist of "things people forget", for example:
 - metrics/logging added where needed
 - backward compatibility verified
 - error handling covered
+- **pantry updated** (`/export --<folder>` with decisions, architecture, requirements)
 
 ### 9) PR Packaging
 - Recommended PR split (if large) — align splits with wave boundaries when possible

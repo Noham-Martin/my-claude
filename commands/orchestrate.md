@@ -90,6 +90,21 @@ SHIP | NEEDS WORK | BLOCKED
 Reason: <1-3 lines>
 ```
 
+### 4) Update pantry
+
+The pantry (`~/dd/dd-pantry/`) is the persistent knowledge library and MUST be kept current.
+
+After producing the final report:
+1. Identify the relevant pantry folder for this project/feature.
+2. Export the orchestration results to the pantry using the `/export` logic:
+   - Decisions made during the chain
+   - Architecture or design choices from the planner
+   - Security findings from the security-reviewer
+   - Key findings and trade-offs
+3. Focus on **durable knowledge** — not build logs or transient test results.
+4. If the verdict is SHIP: include a summary of what shipped and why.
+5. If NEEDS WORK or BLOCKED: include what is unresolved so the next session can pick it up.
+
 ---
 
 ## Handoff Document Format
