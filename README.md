@@ -1,157 +1,331 @@
 # nohamm-workflow v2.0
 
-Complete development workflow ecosystem for Claude Code: agents, orchestration, session management, context engineering, and quality enforcement.
+Complete development workflow ecosystem for Claude Code.
 
 ## Philosophy
 
 - **Consistency over preference** — new code must feel like it always belonged.
-- **TDD as non-negotiable** — RED → GREEN → IMPROVE, always.
-- **Structured knowledge capture** — every insight is persistent and reusable.
-- **Context hygiene** — fresh agent windows, strategic state management.
+- **TDD as non-negotiable** — RED, GREEN, IMPROVE. Always.
+- **The pantry is the library** — every decision, learning, and pattern gets persisted. Knowledge never dies with the session.
+- **Context hygiene** — fresh agent windows, short-term state in `.planning/`, long-term knowledge in the pantry.
 
-## Architecture
+---
+
+## Day-to-Day Workflows
+
+### Starting a new feature
 
 ```
-User Commands (/plan, /verify, /debug, ...)
-        │
-   Commands Layer (16 commands — thin wrappers)
-        │
-    Agents Layer (6 agents — specialized, model-routed)
-        │
-    Hooks Layer (safety guards, quality checks, reminders)
-        │
-  Persistence Layer (.planning/, dd-pantry/, skills/)
+/plan --add user authentication
 ```
 
-## Commands (16)
+The planner (opus) explores the codebase, finds existing patterns, and produces a detailed plan with REQ-IDs, wave-based task ordering, and a full pre-PR checklist. Review the plan, then start implementing.
 
-### Development
+For the full pipeline with automated review:
 
-| Command | Description |
-|---------|-------------|
-| `/plan --<task>` | Detailed implementation plan with REQ-IDs and wave ordering |
-| `/build-fix` | Incremental build error fixing (auto-detects build system) |
-| `/tests` | Backfill missing tests from branch changes (TDD discipline) |
-| `/debug --<issue>` | Systematic debugging with persistent state in `.planning/debug/` |
-| `/verify [--quick\|--full\|--pre-pr]` | Quality gate: build, typecheck, tests, lint, security, git |
+```
+/orchestrate --feature
+```
 
-### Review
+This chains: **planner** (plan it) → **tdd-guide** (test it) → **reviewer** (review it) → **security-reviewer** (secure it). Each agent runs in a fresh context. You get a final SHIP / NEEDS WORK / BLOCKED verdict. The orchestrator also exports the results to your pantry.
 
-| Command | Description |
-|---------|-------------|
-| `/code-review --pr <n>` | Completeness-first review with security section |
-| `/orchestrate --<preset>` | Chain agents: `feature`, `bugfix`, `refactor`, `review` |
+### Fixing a bug
 
-### Session Management
+```
+/debug --login returns 500 on empty password
+```
 
-| Command | Description |
-|---------|-------------|
-| `/progress` | Show status and suggest next action |
-| `/session-save [--<label>]` | Save session state for later resumption |
-| `/session-resume [--<label>]` | Restore context from a previous session |
-| `/checkpoint --<name>` | Create, list, or restore named git checkpoints |
+The debugger creates a persistent file in `.planning/debug/` with immutable symptoms, ranked hypotheses, and append-only evidence. If you run out of context or need to stop:
 
-### Knowledge
+```
+/session-save --login-bug
+```
 
-| Command | Description |
-|---------|-------------|
-| `/learn` | Extract reusable patterns with confidence scoring and domain tags |
-| `/import --<folder>` | Import from dd-pantry or `--project` for `.planning/` |
-| `/export --<folder>` | Export to dd-pantry or `--project` with YAML frontmatter |
-| `/skill-create --<folder>` | Create reusable skill from pantry context |
+Next day, pick up exactly where you left off:
 
-### Meta
+```
+/session-resume --login-bug
+/debug --resume
+```
 
-| Command | Description |
-|---------|-------------|
-| `/help` | List all commands |
+The debug file survived. All hypotheses, evidence, and eliminated causes are still there.
 
-## Agents (6)
+For the full bug pipeline with test coverage:
 
-| Agent | Model | Tools | Auto-invoked when |
-|-------|-------|-------|-------------------|
-| **planner** | opus | Read, Glob, Grep, Bash | Complex feature requests, multi-file changes |
-| **reviewer** | sonnet | Read, Glob, Grep, Bash | Code review needed after changes |
-| **tdd-guide** | sonnet | Read, Glob, Grep, Bash, Edit, Write | Bug fixes, test creation |
-| **debugger** | sonnet | Read, Glob, Grep, Bash, Edit, Write | Investigating bugs or failures |
-| **security-reviewer** | sonnet | Read, Glob, Grep | Changes touching auth, input, APIs, sensitive data |
-| **build-resolver** | sonnet | Read, Glob, Grep, Bash, Edit | Build failures |
+```
+/orchestrate --bugfix
+```
 
-## Rules (6)
+This chains: **debugger** (find it) → **tdd-guide** (test it) → **reviewer** (review the fix).
 
-| Rule | Purpose |
-|------|---------|
-| **coding-style** | Consistency over preference. Match existing patterns. |
-| **git-workflow** | `nohamm/<branch>`, imperative commits, no co-authors. |
-| **testing** | Strict TDD. Coverage derived from codebase. |
-| **performance** | Model routing: opus for planning, sonnet for execution. |
-| **agents** | Auto-invocation rules, handoff protocol, context hygiene. |
-| **sessions** | STATE.md conventions, session lifecycle, debug persistence. |
+### Before pushing
 
-## Skills (4)
+Quick check during development (build + tests only):
 
-| Skill | Purpose |
-|-------|---------|
-| **orchestrate** | Agent chaining templates and handoff format |
-| **debug-session** | Debug file templates and methodology |
-| **session-manager** | STATE.md and session file templates |
-| **verification-loop** | Quality gate methodology and pre-PR checklist |
+```
+/verify
+```
 
-## Hooks
+Full quality gate before opening a PR (build + typecheck + tests + lint + security scan + git status):
 
-| Event | Hook | Behavior |
-|-------|------|----------|
-| PreToolUse (Bash) | `safety-guard.sh` | Blocks `rm -rf /`, force-push to main, DROP TABLE |
-| PreToolUse (Edit/Write) | `branch-guard.sh` | Blocks file edits on main/master branch |
-| PostToolUse (Edit/Write) | `lint-check.sh` | Async lint on edited files |
-| Stop | `stop-reminder.sh` | Warns about uncommitted changes |
+```
+/verify --full
+```
+
+Full gate plus a diff review and draft PR description:
+
+```
+/verify --pre-pr
+```
+
+### Reviewing code
+
+Review a PR by number:
+
+```
+/code-review --pr 1234
+```
+
+Review current branch changes:
+
+```
+/code-review
+```
+
+The review covers completeness (missing call sites, configs, migrations), security (injection, auth, data exposure), tests, and code quality. After the verdict, it reminds you to update the pantry if the review surfaced decisions.
+
+For a combined code + security review:
+
+```
+/orchestrate --review
+```
+
+### Refactoring safely
+
+```
+/orchestrate --refactor
+```
+
+Chains: **planner** (design the refactor) → **reviewer** (catch regressions) → **tdd-guide** (ensure test coverage).
+
+### Build is broken
+
+```
+/build-fix
+```
+
+Auto-detects the build system (bazel, npm, cargo, go, make, maven, gradle). Fixes errors one at a time, re-running the build after each fix. Stops if a fix makes things worse.
+
+### Tests are missing
+
+```
+/tests
+```
+
+Inspects the branch diff, finds untested behavior, locates reference test patterns from similar features, and backfills using strict TDD (write failing test → make it pass → improve).
+
+---
 
 ## Session Management
 
-### Save and resume workflow
+### The daily loop
 
-```
-# End of session
-/session-save --feature-auth
-
-# New session
-/session-resume --feature-auth
-```
-
-State files live in `.planning/` per project:
-- `STATE.md` — short-term memory (max 100 lines)
-- `sessions/` — full session snapshots
-- `debug/` — persistent debug sessions
-- `checkpoints.md` — named git save points
-
-### Quick status check
+**Start of session:**
 
 ```
 /progress
 ```
 
-Reads all state and suggests the single most important next action.
+This reads `.planning/STATE.md`, checks git status, looks for active debug sessions, and tells you the ONE most important thing to do next. Examples:
+- "Active debug session found — run `/debug --resume`"
+- "You have 3 unpushed commits — run `/verify --pre-pr` then push"
+- "Previous session had work in progress on auth middleware — pick up or run `/session-resume`"
+- "All clear — ready for new work"
 
-## Orchestration
-
-Chain agents for end-to-end workflows:
+**End of session:**
 
 ```
-/orchestrate --feature    # planner → tdd-guide → reviewer → security-reviewer
-/orchestrate --bugfix     # debugger → tdd-guide → reviewer
-/orchestrate --refactor   # planner → reviewer → tdd-guide
-/orchestrate --review     # reviewer → security-reviewer
+/session-save --feature-auth
 ```
 
-Each agent gets a fresh context window. Results pass via standardized handoff documents. Final verdict: SHIP / NEEDS WORK / BLOCKED.
+This saves:
+- What you accomplished
+- What is still in progress (with file paths)
+- Decisions made and their rationale
+- Blockers and open questions
+- Mental context (the "why" that isn't obvious from code)
+- Git state snapshot
 
-## Pantry System
+It also checks if anything from this session belongs in the pantry (decisions, architecture choices, learnings) and exports it automatically.
 
-Cross-project knowledge persistence via `~/dd/dd-pantry/`:
-- `/import --<folder>` loads existing notes
-- `/export --<folder>` saves new notes (auto-numbered with YAML frontmatter)
-- `/skill-create --<folder>` converts notes into reusable skills
-- `/import --project` and `/export --project` work with `.planning/` instead
+**Resuming:**
+
+```
+/session-resume --feature-auth
+```
+
+Loads the session file, verifies git state hasn't diverged, and suggests next actions.
+
+### Checkpoints
+
+Before risky operations (big refactors, migrations, trying a different approach):
+
+```
+/checkpoint --before-refactor
+```
+
+This creates a named save point (git stash + checkpoint log). If things go wrong:
+
+```
+/checkpoint --restore before-refactor
+```
+
+List all checkpoints:
+
+```
+/checkpoint --list
+```
+
+---
+
+## The Pantry
+
+The pantry (`~/dd/dd-pantry/`) is your persistent knowledge library across projects and sessions.
+
+### When it gets updated
+
+The pantry is wired into the workflow at every milestone:
+
+| Event | What happens |
+|-------|-------------|
+| `/session-save` | Auto-exports decisions and learnings to the pantry |
+| `/orchestrate` completes | Exports findings, architecture decisions, and outcomes |
+| `/code-review` verdict | Reminds you to export if the review surfaced durable knowledge |
+| `/plan` pre-PR checklist | "Pantry updated" is a mandatory checklist item |
+| `/learn` | Extracts patterns as skills (which can also feed the pantry) |
+
+### Commands
+
+```
+/import --auth-service       # Load context from ~/dd/dd-pantry/auth-service/
+/export --auth-service       # Save new context (auto-numbered: 03-api-design.md)
+/skill-create --auth-service # Turn pantry knowledge into a reusable skill
+```
+
+For project-local context (`.planning/` instead of pantry):
+
+```
+/import --project
+/export --project
+```
+
+### What belongs in the pantry
+
+- Decisions with rationale and alternatives considered
+- Architecture and design choices
+- Requirements discovered or refined
+- Integration patterns and API contracts
+- Debugging insights and workarounds
+
+### What does NOT belong
+
+- Ephemeral session state (that goes in `.planning/`)
+- Build logs or test output
+- Trivial fixes
+
+**Rule of thumb:** if you'd want to remember it next month, it goes in the pantry.
+
+---
+
+## Knowledge Extraction
+
+### After solving a hard problem
+
+```
+/learn
+```
+
+Reviews the current session for reusable patterns: error resolution techniques, debugging sequences, workarounds, project-specific conventions. Assigns a confidence score (0.0-1.0) and domain tag. Checks for duplicates against existing skills before saving to `~/.claude/skills/learned/`.
+
+### From accumulated pantry notes
+
+```
+/skill-create --auth-service
+```
+
+Reads all pantry files for a topic, identifies ONE strong reusable pattern, drafts a skill with trigger conditions and pitfalls, and asks for confirmation before saving.
+
+---
+
+## Agents
+
+Six specialized agents, each with restricted tools and a specific model:
+
+| Agent | Model | What it does | Invoked by |
+|-------|-------|-------------|------------|
+| **planner** | opus | Explores codebase, produces detailed plans with REQ-IDs and waves | `/plan`, `/orchestrate --feature`, `/orchestrate --refactor` |
+| **reviewer** | sonnet | Completeness-first code review with security checks | `/code-review`, `/orchestrate --*` |
+| **tdd-guide** | sonnet | Strict RED-GREEN-IMPROVE test writing | `/tests`, `/orchestrate --feature`, `/orchestrate --bugfix` |
+| **debugger** | sonnet | Systematic debugging with persistent state files | `/debug`, `/orchestrate --bugfix` |
+| **security-reviewer** | sonnet | OWASP Top 10, injection, auth, data exposure | `/orchestrate --feature`, `/orchestrate --review` |
+| **build-resolver** | sonnet | Auto-detect build system, fix errors one at a time | `/build-fix` |
+
+Agents auto-invoke based on context too: complex feature request triggers planner, bug report triggers debugger, code changes trigger reviewer.
+
+---
+
+## Hooks
+
+Always-on safety and quality enforcement:
+
+| Hook | When | What it does |
+|------|------|-------------|
+| **safety-guard** | Before any Bash command | Blocks `rm -rf /`, force-push to main, `DROP TABLE`. Warns on `git reset --hard`, `git clean`. |
+| **branch-guard** | Before any file edit | Blocks edits on main/master. Tells you to create a feature branch. |
+| **lint-check** | After any file edit | Runs the appropriate linter (eslint/ruff/golangci-lint) in the background. |
+| **stop-reminder** | After Claude stops | Warns if you have uncommitted changes. |
+
+---
+
+## Rules
+
+Always-active guidelines that shape every interaction:
+
+| Rule | Core idea |
+|------|-----------|
+| **coding-style** | Search for existing patterns before writing anything. Mirror what exists. |
+| **git-workflow** | Branch: `nohamm/<name>`. Commits: imperative verb, single line, no co-authors. |
+| **testing** | TDD always. Coverage derived from codebase, never invented. |
+| **performance** | Opus for planning. Sonnet for execution. Plan mode for multi-file changes. |
+| **agents** | Auto-invoke rules, handoff protocol, parallel execution when independent. |
+| **sessions** | STATE.md under 100 lines. Pantry updated at every milestone. Debug files are the source of truth. |
+
+---
+
+## Quick Reference
+
+| I want to... | Run |
+|--------------|-----|
+| Plan a feature | `/plan --<task>` |
+| Build + test + review + security in one go | `/orchestrate --feature` |
+| Fix a bug end-to-end | `/orchestrate --bugfix` |
+| Debug something | `/debug --<issue>` |
+| Run tests for my changes | `/tests` |
+| Fix build errors | `/build-fix` |
+| Quick check before pushing | `/verify` |
+| Full check before PR | `/verify --pre-pr` |
+| Review a PR | `/code-review --pr <n>` |
+| Save my work for tomorrow | `/session-save --<label>` |
+| Resume where I left off | `/session-resume` |
+| What should I do next? | `/progress` |
+| Save point before risky change | `/checkpoint --<name>` |
+| Load context from pantry | `/import --<folder>` |
+| Save knowledge to pantry | `/export --<folder>` |
+| Extract a reusable pattern | `/learn` |
+| Turn pantry notes into a skill | `/skill-create --<folder>` |
+| See all commands | `/help` |
+
+---
 
 ## Directory Structure
 
@@ -160,9 +334,23 @@ nohamm-workflow/
 ├── .claude-plugin/plugin.json     # Plugin manifest (v2.0.0)
 ├── .claude/settings.local.json    # Permissions
 ├── agents/                        # 6 specialized sub-agents
+│   ├── planner.md
+│   ├── reviewer.md
+│   ├── tdd-guide.md
+│   ├── debugger.md
+│   ├── security-reviewer.md
+│   └── build-resolver.md
 ├── commands/                      # 16 slash commands
 ├── hooks/hooks.json               # Hook configuration
 ├── rules/                         # 6 always-active rules
 ├── scripts/                       # Hook helper scripts
+│   ├── safety-guard.sh
+│   ├── branch-guard.sh
+│   ├── lint-check.sh
+│   └── stop-reminder.sh
 └── skills/                        # 4 skills with templates
+    ├── orchestrate/
+    ├── debug-session/
+    ├── session-manager/
+    └── verification-loop/
 ```
