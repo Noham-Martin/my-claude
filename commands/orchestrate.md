@@ -28,7 +28,7 @@ The prompt is passed to the first agent in the chain as its task. If no prompt i
 | `refactor` | planner → **implement** → tdd-guide → reviewer | Restructuring code safely |
 | `review` | reviewer → security-reviewer | Reviewing before merge |
 
-**Bold steps** are implementation pauses — the orchestrator stops, you (or Claude) write the code, then the chain resumes with the next agent.
+**Bold steps** are implementation pauses — the orchestrator presents the plan/fix from the previous agent, waits for user confirmation, then implements the code before resuming the chain.
 
 Parse the preset from `--<preset>`. If an unrecognized preset is given, list the available ones and ask the user to choose.
 
@@ -63,8 +63,8 @@ For each step in the chain:
 When the chain reaches an **implement** step:
 
 1. Present the previous agent's output (the plan or the identified fix).
-2. Pause and ask the user: implement now or skip to the next agent?
-3. If implementing: write the code following the plan/fix from the previous agent.
+2. Ask the user for confirmation before implementing.
+3. Implement the code following the plan/fix from the previous agent.
 4. After implementation is done, produce a handoff document summarizing what was implemented (files changed, decisions made).
 5. Resume the chain with the next agent.
 

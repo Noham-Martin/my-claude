@@ -24,7 +24,7 @@ Complete development workflow ecosystem for Claude Code.
 
 ## Orchestration
 
-Chain agents end-to-end. **Bold steps** are implementation pauses where you write the code.
+Chain agents end-to-end. **Bold steps** are implementation pauses — Claude presents the plan and waits for your go-ahead before coding.
 
 | Command | Chain |
 |---------|-------|
