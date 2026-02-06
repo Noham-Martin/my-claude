@@ -31,26 +31,19 @@ This chains: **planner** (plan it) → **tdd-guide** (test it) → **reviewer** 
 
 ### Fixing a bug
 
+Quick start — jump straight into systematic debugging:
+
 ```
 /debug --login returns 500 on empty password
 ```
 
-The debugger creates a persistent file in `.planning/debug/` with immutable symptoms, ranked hypotheses, and append-only evidence. If you run out of context or need to stop:
+The debugger creates a persistent file in `.planning/debug/` with immutable symptoms, ranked hypotheses, and append-only evidence. If you need to stop and come back later, the debug file survives across sessions — just resume it:
 
 ```
-/session-save --login-bug
-```
-
-Next day, pick up exactly where you left off:
-
-```
-/session-resume --login-bug
 /debug --resume
 ```
 
-The debug file survived. All hypotheses, evidence, and eliminated causes are still there.
-
-For the full bug pipeline with test coverage:
+For the full bug pipeline (debug + test + review):
 
 ```
 /orchestrate --bugfix
@@ -128,27 +121,15 @@ Inspects the branch diff, finds untested behavior, locates reference test patter
 
 ## Session Management
 
-### The daily loop
+Sessions let you save and restore your working context. Useful when you work on multiple things in parallel or need to pick up tomorrow where you left off today.
 
-**Start of session:**
-
-```
-/progress
-```
-
-This reads `.planning/STATE.md`, checks git status, looks for active debug sessions, and tells you the ONE most important thing to do next. Examples:
-- "Active debug session found — run `/debug --resume`"
-- "You have 3 unpushed commits — run `/verify --pre-pr` then push"
-- "Previous session had work in progress on auth middleware — pick up or run `/session-resume`"
-- "All clear — ready for new work"
-
-**End of session:**
+### Saving a session
 
 ```
 /session-save --feature-auth
 ```
 
-This saves:
+This saves to `.planning/sessions/2026-02-06-feature-auth.md`:
 - What you accomplished
 - What is still in progress (with file paths)
 - Decisions made and their rationale
@@ -158,9 +139,9 @@ This saves:
 
 It also checks if anything from this session belongs in the pantry (decisions, architecture choices, learnings) and exports it automatically.
 
-**Resuming (parallel sessions):**
+### Listing sessions
 
-When running multiple sessions in parallel, list them first:
+When running multiple sessions in parallel, see what's available:
 
 ```
 /session-list
@@ -172,17 +153,39 @@ Saved sessions:
   Label              Date        Branch              Status
   ─────              ────        ──────              ──────
   feature-auth       2026-02-06  nohamm/auth         In progress: JWT middleware
-  login-bug          2026-02-05  nohamm/fix-login    Resolved: empty password crash
+  login-bug          2026-02-05  nohamm/fix-login    In progress: narrowing hypotheses
   metrics-v2         2026-02-03  nohamm/metrics      In progress: dashboard queries
+
+  Total: 3 sessions
+  Active debug sessions: 1
 ```
 
-Then resume the one you need:
+### Resuming a session
+
+Resume a specific session by label:
 
 ```
 /session-resume --feature-auth
 ```
 
-Loads the session file, verifies git state hasn't diverged, and suggests next actions. Without a label, it resumes the most recent session.
+Or resume the most recent one:
+
+```
+/session-resume
+```
+
+Loads the session file, verifies git state hasn't diverged, and suggests next actions.
+
+### Quick status check
+
+```
+/progress
+```
+
+Reads all state and tells you the ONE most important thing to do next:
+- "You have 3 unpushed commits — run `/verify --pre-pr` then push"
+- "Previous session had work in progress on auth middleware — run `/session-resume --feature-auth`"
+- "All clear — ready for new work"
 
 ### Checkpoints
 
@@ -204,11 +207,52 @@ List all checkpoints:
 /checkpoint --list
 ```
 
+### Where state lives
+
+```
+.planning/
+├── STATE.md           # Short-term memory (max 100 lines), read at session start
+├── sessions/          # Full session snapshots (one per /session-save)
+├── checkpoints.md     # Named git save points
+└── debug/             # Persistent debug sessions (separate from session management)
+    └── resolved/      # Completed debug sessions
+```
+
+---
+
+## Debugging
+
+Debugging is its own workflow, separate from session management. Debug files persist in `.planning/debug/` and survive across sessions automatically.
+
+### Starting a debug session
+
+```
+/debug --login returns 500 on empty password
+```
+
+Creates `.planning/debug/debug-2026-02-06-login-500.md` with:
+- **Symptoms** (immutable once written)
+- **Hypotheses** ranked by likelihood
+- **Evidence** (append-only, gathered step by step)
+- **Resolution** (filled when the root cause is found)
+
+### Resuming a debug session
+
+```
+/debug --resume
+```
+
+Picks up the most recent active debug session. All hypotheses, evidence, and eliminated causes are still there — no context lost.
+
+### After resolving
+
+The debug file moves to `.planning/debug/resolved/`. If the pattern is reusable, the debugger suggests running `/learn` to extract it as a skill.
+
 ---
 
 ## The Pantry
 
-The pantry (`~/dd/dd-pantry/`) is your persistent knowledge library across projects and sessions.
+The pantry (`~/dd/dd-pantry/`) is your persistent knowledge library across projects and sessions. It is the most important persistence layer — sessions come and go, but the pantry is forever.
 
 ### When it gets updated
 
@@ -244,6 +288,7 @@ For project-local context (`.planning/` instead of pantry):
 - Requirements discovered or refined
 - Integration patterns and API contracts
 - Debugging insights and workarounds
+- PR context: what was changed, why, trade-offs
 
 ### What does NOT belong
 
@@ -328,12 +373,13 @@ Always-active guidelines that shape every interaction:
 | Build + test + review + security in one go | `/orchestrate --feature` |
 | Fix a bug end-to-end | `/orchestrate --bugfix` |
 | Debug something | `/debug --<issue>` |
+| Resume a debug session | `/debug --resume` |
 | Run tests for my changes | `/tests` |
 | Fix build errors | `/build-fix` |
 | Quick check before pushing | `/verify` |
 | Full check before PR | `/verify --pre-pr` |
 | Review a PR | `/code-review --pr <n>` |
-| Save my work for tomorrow | `/session-save --<label>` |
+| Save my work | `/session-save --<label>` |
 | See all my saved sessions | `/session-list` |
 | Resume a specific session | `/session-resume --<label>` |
 | What should I do next? | `/progress` |
@@ -359,7 +405,7 @@ nohamm-workflow/
 │   ├── debugger.md
 │   ├── security-reviewer.md
 │   └── build-resolver.md
-├── commands/                      # 16 slash commands
+├── commands/                      # 17 slash commands
 ├── hooks/hooks.json               # Hook configuration
 ├── rules/                         # 6 always-active rules
 ├── scripts/                       # Hook helper scripts
