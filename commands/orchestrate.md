@@ -13,12 +13,14 @@ Run a sequence of specialized agents, each passing a standardized handoff docume
 
 ## Presets
 
-| Preset | Agent Chain | Use When |
-|--------|------------|----------|
-| `feature` | planner → tdd-guide → reviewer → security-reviewer | Building a new feature end-to-end |
-| `bugfix` | debugger → tdd-guide → reviewer | Fixing a bug with proper test coverage |
-| `refactor` | planner → reviewer → tdd-guide | Restructuring code safely |
+| Preset | Chain | Use When |
+|--------|-------|----------|
+| `feature` | planner → **implement** → tdd-guide → reviewer → security-reviewer | Building a new feature end-to-end |
+| `bugfix` | debugger → **implement fix** → tdd-guide → reviewer | Fixing a bug with proper test coverage |
+| `refactor` | planner → **implement** → reviewer → tdd-guide | Restructuring code safely |
 | `review` | reviewer → security-reviewer | Reviewing before merge |
+
+**Bold steps** are implementation pauses — the orchestrator stops, you (or Claude) write the code, then the chain resumes with the next agent.
 
 Parse the preset from `--<preset>`. If an unrecognized preset is given, list the available ones and ask the user to choose.
 
@@ -35,32 +37,36 @@ Parse the preset from `--<preset>`. If an unrecognized preset is given, list the
   Chain: planner → tdd-guide → reviewer → security-reviewer
   ```
 
-### 2) Execute each agent in sequence
+### 2) Execute the chain
 
-For each agent in the chain:
+For each step in the chain:
 
-#### a) Prepare context
+#### Agent steps
+
 - For the **first agent**: use the user's original request as input.
-- For **subsequent agents**: include the previous agent's handoff document as input context.
-
-#### b) Invoke the agent
+- For **subsequent agents**: include the previous handoff document(s) as input context.
 - Spawn the agent using `Task()` with the appropriate subagent type.
-- Pass it:
-  - The user's original request
-  - The accumulated handoff chain (all previous handoffs)
-  - Clear instructions on what THIS agent should focus on
+- Capture the agent's output and format it as a handoff document (see format below).
 
-#### c) Collect results
-- Capture the agent's output.
-- Format it as a handoff document (see format below).
+#### Implementation steps
 
-#### d) Report progress
-- After each agent completes, show a brief status:
-  ```
-  [1/4] planner    ... DONE
-  [2/4] tdd-guide  ... DONE
-  [3/4] reviewer   ... IN PROGRESS
-  ```
+When the chain reaches an **implement** step:
+
+1. Present the previous agent's output (the plan or the identified fix).
+2. Pause and ask the user: implement now or skip to the next agent?
+3. If implementing: write the code following the plan/fix from the previous agent.
+4. After implementation is done, produce a handoff document summarizing what was implemented (files changed, decisions made).
+5. Resume the chain with the next agent.
+
+#### Progress reporting
+
+After each step completes, show status:
+```
+[1/5] planner      ... DONE
+[2/5] implement    ... DONE (12 files changed)
+[3/5] tdd-guide    ... DONE
+[4/5] reviewer     ... IN PROGRESS
+```
 
 ### 3) Aggregate final report
 

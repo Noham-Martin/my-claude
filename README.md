@@ -21,10 +21,17 @@ Complete development workflow ecosystem for Claude Code.
 |---------|-------------|
 | `/code-review` | Review current branch changes |
 | `/code-review --pr <n>` | Review a PR by number |
-| `/orchestrate --feature` | Chain: planner → tdd-guide → reviewer → security-reviewer |
-| `/orchestrate --bugfix` | Chain: debugger → tdd-guide → reviewer |
-| `/orchestrate --refactor` | Chain: planner → reviewer → tdd-guide |
-| `/orchestrate --review` | Chain: reviewer → security-reviewer |
+
+## Orchestration
+
+Chain agents end-to-end. **Bold steps** are implementation pauses where you write the code.
+
+| Command | Chain |
+|---------|-------|
+| `/orchestrate --feature` | planner → **implement** → tdd-guide → reviewer → security-reviewer |
+| `/orchestrate --bugfix` | debugger → **implement fix** → tdd-guide → reviewer |
+| `/orchestrate --refactor` | planner → **implement** → reviewer → tdd-guide |
+| `/orchestrate --review` | reviewer → security-reviewer |
 
 ## Debug Sessions
 
