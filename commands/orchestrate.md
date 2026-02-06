@@ -1,6 +1,6 @@
 ---
 description: Chain multiple agents in sequence for end-to-end workflows
-argument-hint: --<preset>
+argument-hint: --<preset> --<prompt>
 allowed-tools: [Read, Glob, Grep, Bash, Edit, Write]
 ---
 
@@ -9,7 +9,15 @@ allowed-tools: [Read, Glob, Grep, Bash, Edit, Write]
 Run a sequence of specialized agents, each passing a standardized handoff document to the next.
 
 ## Usage
-`/orchestrate --<preset>`
+`/orchestrate --<preset> --<prompt>`
+
+Examples:
+- `/orchestrate --feature --add JWT authentication to the API`
+- `/orchestrate --bugfix --login returns 500 on empty password`
+- `/orchestrate --refactor --split monolithic UserService into separate concerns`
+- `/orchestrate --review`
+
+The prompt is passed to the first agent in the chain as its task. If no prompt is provided, ask the user what they want to work on before starting.
 
 ## Presets
 
@@ -30,11 +38,13 @@ Parse the preset from `--<preset>`. If an unrecognized preset is given, list the
 
 ### 1) Initialize
 
-- Parse the preset and determine the agent chain.
+- Parse the preset and the prompt.
+- If no prompt is provided: ask the user what they want to work on. Do not start the chain without a prompt.
 - Announce the chain to the user:
   ```
   Orchestrating: feature
-  Chain: planner → tdd-guide → reviewer → security-reviewer
+  Prompt: add JWT authentication to the API
+  Chain: planner → implement → tdd-guide → reviewer → security-reviewer
   ```
 
 ### 2) Execute the chain

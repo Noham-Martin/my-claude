@@ -23,7 +23,7 @@ allowed-tools: []
 | Command | Description |
 |---------|-------------|
 | `/code-review --pr <n>` | Code review focused on completeness, security, and quality |
-| `/orchestrate --<preset>` | Chain agents: feature, bugfix, refactor, review |
+| `/orchestrate --<preset> --<prompt>` | Chain agents: feature, bugfix, refactor, review |
 
 ## Session Management
 
