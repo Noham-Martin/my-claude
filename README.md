@@ -30,7 +30,7 @@ Chain agents end-to-end. **Bold steps** are implementation pauses where you writ
 |---------|-------|
 | `/orchestrate --feature --<prompt>` | planner → **implement** → tdd-guide → reviewer → security-reviewer |
 | `/orchestrate --bugfix --<prompt>` | debugger → **implement fix** → tdd-guide → reviewer |
-| `/orchestrate --refactor --<prompt>` | planner → **implement** → reviewer → tdd-guide |
+| `/orchestrate --refactor --<prompt>` | planner → **implement** → tdd-guide → reviewer |
 | `/orchestrate --review` | reviewer → security-reviewer |
 
 ## Debug Sessions

@@ -25,7 +25,7 @@ The prompt is passed to the first agent in the chain as its task. If no prompt i
 |--------|-------|----------|
 | `feature` | planner → **implement** → tdd-guide → reviewer → security-reviewer | Building a new feature end-to-end |
 | `bugfix` | debugger → **implement fix** → tdd-guide → reviewer | Fixing a bug with proper test coverage |
-| `refactor` | planner → **implement** → reviewer → tdd-guide | Restructuring code safely |
+| `refactor` | planner → **implement** → tdd-guide → reviewer | Restructuring code safely |
 | `review` | reviewer → security-reviewer | Reviewing before merge |
 
 **Bold steps** are implementation pauses — the orchestrator stops, you (or Claude) write the code, then the chain resumes with the next agent.
