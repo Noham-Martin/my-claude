@@ -1,0 +1,13 @@
+# Plans and temporary artifacts
+PLAN.md
+
+# Session and state files
+.planning/
+
+# OS files
+.DS_Store
+
+# Editor
+*.swp
+*.swo
+*~

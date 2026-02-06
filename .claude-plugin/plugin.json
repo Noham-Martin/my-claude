@@ -1,5 +1,11 @@
 {
   "name": "nohamm-workflow",
-  "version": "1.0.0",
-  "description": "Personal workflow rules and commands for consistent coding, TDD, git workflow, and context management"
+  "version": "2.0.0",
+  "description": "Complete development workflow ecosystem: agents, orchestration, session management, context engineering, and quality enforcement",
+  "author": {
+    "name": "Noham Martin"
+  },
+  "agents": "./agents/",
+  "skills": "./skills/",
+  "hooks": "./hooks/hooks.json"
 }
