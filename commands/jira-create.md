@@ -15,6 +15,10 @@ Read a pantry folder and create a full Jira epic with tasks.
 
 1. **Pantry folder** (required) — the folder in `~/dd/dd-pantry/<folder>/` to use as context.
 
+## Jira Access
+
+Use the Atlassian MCP server (configured in dd-source as `atlassian` via `https://mcp.atlassian.com/v1/sse`). All Jira operations go through the MCP tools (search, create, update, transition).
+
 ## Process
 
 ### 1) Read pantry context
@@ -37,6 +41,7 @@ Based on the pantry context, draft:
 
 For each task, determine the appropriate status:
 - Work already completed → "Done"
+- Work awaiting review → "In Review"
 - Work actively in progress → "In Progress"
 - Work not yet started → "Selected for Development"
 
@@ -76,7 +81,7 @@ For each task, create a ticket:
 - Description: detailed context from pantry
 - Assignee: Noham Martin
 - Component: backend-ingestion
-- Status: "Selected for Development", "In Progress", or "Done"
+- Status: "Selected for Development", "In Progress", "In Review", or "Done"
 - Link to the epic as parent
 
 ### 5) Report
@@ -93,7 +98,7 @@ Created epic PROJ-200: "Auth Service — JWT Authentication"
 
 - **Assignee**: always Noham Martin
 - **Component**: always `backend-ingestion`
-- **Status**: only use "Selected for Development", "In Progress", or "Done"
+- **Status**: only use "Selected for Development", "In Progress", "In Review", or "Done"
 - **Summary**: imperative form, concise (e.g., "Add JWT refresh token rotation")
 - **Description**: include relevant context from the pantry notes
 - **Task granularity**: each task should be a meaningful unit of work (not too small, not too large). Aim for tasks that take 1-3 days.

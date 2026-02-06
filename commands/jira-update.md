@@ -19,6 +19,10 @@ Sync a Jira epic with current progress. Creates missing tickets, updates statuse
    - A pantry folder name (loads from `~/dd/dd-pantry/<folder>/`)
    - A list of PR numbers prefixed with `#` (fetches via `gh pr view`)
 
+## Jira Access
+
+Use the Atlassian MCP server (configured in dd-source as `atlassian` via `https://mcp.atlassian.com/v1/sse`). All Jira operations go through the MCP tools (search, create, update, transition).
+
 ## Process
 
 ### 1) Gather context
@@ -43,6 +47,7 @@ Compare the gathered context against the current epic state:
 
 - **New work not in Jira** → plan ticket creation
 - **Completed work with open tickets** → plan status transition to "Done"
+- **Work with open PRs awaiting review** → plan status transition to "In Review"
 - **In-progress work** → plan status transition to "In Progress"
 - **Planned but not started** → ensure status is "Selected for Development"
 - **Tickets that match existing work** → update summary/description if stale
@@ -76,7 +81,7 @@ After user confirmation:
 - Description: detailed context from pantry/PRs
 - Assignee: Noham Martin
 - Component: backend-ingestion
-- Status: one of "Selected for Development", "In Progress", or "Done"
+- Status: one of "Selected for Development", "In Progress", "In Review", or "Done"
 - Link to the epic as parent
 
 **Updating tickets:**
@@ -96,7 +101,7 @@ Updated epic PROJ-123:
 
 - **Assignee**: always Noham Martin
 - **Component**: always `backend-ingestion`
-- **Status**: only use "Selected for Development", "In Progress", or "Done"
+- **Status**: only use "Selected for Development", "In Progress", "In Review", or "Done"
 - **Summary**: imperative form, concise (e.g., "Add JWT refresh token rotation")
 - **Description**: include relevant context, file paths, PR links where applicable
 
@@ -106,4 +111,5 @@ Updated epic PROJ-123:
 - Never delete tickets. If a ticket seems obsolete, flag it but do not remove it.
 - Never change the epic title or description unless explicitly asked.
 - If a PR is merged, the corresponding ticket should be "Done".
-- If a PR is open/draft, the corresponding ticket should be "In Progress".
+- If a PR is open and ready for review, the corresponding ticket should be "In Review".
+- If a PR is draft or work is ongoing, the corresponding ticket should be "In Progress".
