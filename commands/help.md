@@ -28,6 +28,7 @@ allowed-tools: []
 |---------|-------------|
 | `/progress` | Show current status and suggest next action |
 | `/session-save [--<label>]` | Save session state for later resumption |
+| `/session-list` | List all saved sessions |
 | `/session-resume [--<label>]` | Restore context from a previous session |
 | `/checkpoint --<name>` | Create, list, or restore named git checkpoints |
 

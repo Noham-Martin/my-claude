@@ -158,13 +158,31 @@ This saves:
 
 It also checks if anything from this session belongs in the pantry (decisions, architecture choices, learnings) and exports it automatically.
 
-**Resuming:**
+**Resuming (parallel sessions):**
+
+When running multiple sessions in parallel, list them first:
+
+```
+/session-list
+```
+
+```
+Saved sessions:
+
+  Label              Date        Branch              Status
+  ─────              ────        ──────              ──────
+  feature-auth       2026-02-06  nohamm/auth         In progress: JWT middleware
+  login-bug          2026-02-05  nohamm/fix-login    Resolved: empty password crash
+  metrics-v2         2026-02-03  nohamm/metrics      In progress: dashboard queries
+```
+
+Then resume the one you need:
 
 ```
 /session-resume --feature-auth
 ```
 
-Loads the session file, verifies git state hasn't diverged, and suggests next actions.
+Loads the session file, verifies git state hasn't diverged, and suggests next actions. Without a label, it resumes the most recent session.
 
 ### Checkpoints
 
@@ -316,7 +334,8 @@ Always-active guidelines that shape every interaction:
 | Full check before PR | `/verify --pre-pr` |
 | Review a PR | `/code-review --pr <n>` |
 | Save my work for tomorrow | `/session-save --<label>` |
-| Resume where I left off | `/session-resume` |
+| See all my saved sessions | `/session-list` |
+| Resume a specific session | `/session-resume --<label>` |
 | What should I do next? | `/progress` |
 | Save point before risky change | `/checkpoint --<name>` |
 | Load context from pantry | `/import --<folder>` |
