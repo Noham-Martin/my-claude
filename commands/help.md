@@ -5,17 +5,43 @@ allowed-tools: []
 
 # Nohamm Workflow Commands
 
-Here are all available commands from this plugin:
+## Development
+
+| Command | Description |
+|---------|-------------|
+| `/plan --<task>` | Generate detailed end-to-end implementation plan |
+| `/build-fix` | Incrementally fix build errors one at a time |
+| `/tests` | Backfill missing tests based on current branch changes |
+| `/debug --<issue>` | Systematic debugging with persistent state |
+| `/verify [--quick\|--full\|--pre-pr]` | Quality gate: build, tests, lint, security, git status |
+
+## Review
+
+| Command | Description |
+|---------|-------------|
+| `/code-review --pr <n>` | Code review focused on completeness, security, and quality |
+| `/orchestrate --<preset>` | Chain agents: feature, bugfix, refactor, review |
+
+## Session Management
+
+| Command | Description |
+|---------|-------------|
+| `/progress` | Show current status and suggest next action |
+| `/session-save [--<label>]` | Save session state for later resumption |
+| `/session-resume [--<label>]` | Restore context from a previous session |
+| `/checkpoint --<name>` | Create, list, or restore named git checkpoints |
+
+## Knowledge
+
+| Command | Description |
+|---------|-------------|
+| `/learn` | Extract reusable patterns from current session |
+| `/import --<folder>` | Import context from dd-pantry or `--project` |
+| `/export --<folder>` | Export context to dd-pantry or `--project` |
+| `/skill-create --<folder>` | Create a reusable skill from pantry context |
+
+## Meta
 
 | Command | Description |
 |---------|-------------|
 | `/help` | Show this list |
-| `/verify` | Quick project verification - checks build, tests, lint, and git status |
-| `/build-fix` | Incrementally fix build errors one at a time |
-| `/code-review` | Code review focused on completeness, quality, and improvements |
-| `/plan` | Generate detailed end-to-end implementation plan |
-| `/tests` | Backfill missing tests based on current branch changes |
-| `/learn` | Extract reusable patterns from current session as skills |
-| `/export --<folder>` | Export context to dd-pantry folder |
-| `/import --<folder>` | Import context from dd-pantry folder |
-| `/skill-create --<folder>` | Create a reusable skill from pantry context |
