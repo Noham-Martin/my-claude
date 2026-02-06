@@ -15,7 +15,6 @@ Save and restore working context. State lives in `.planning/sessions/`.
 | `/session-resume --<label>` | Resume a specific session |
 | `/session-resume` | Resume most recent session |
 | `/session-delete --<label>` | Delete a saved session |
-| `/progress` | Quick status check — suggests the ONE next action |
 
 ## Debug Sessions
 
