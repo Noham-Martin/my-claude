@@ -53,10 +53,17 @@ For each relevant change:
   - new edge cases
 - Check whether corresponding tests already exist or were added.
 
+Categorize existing and missing tests by type (based on what the codebase uses):
+- **Unit tests**: isolated function/component tests
+- **Integration tests**: tests spanning multiple modules or services
+- **E2E tests**: end-to-end workflow tests (only if the codebase already has them)
+
+Do NOT introduce a test category the codebase does not already use.
+
 Explicitly call out:
 - Files/features with **no tests**
 - Files/features with **partial coverage**
-- Files/features where tests exist but don’t reflect the new behavior
+- Files/features where tests exist but don't reflect the new behavior
 
 ---
 
@@ -133,6 +140,7 @@ For each test:
 - File path
 - What behavior it covers
 - Which commit/change it validates
+- Test type (unit / integration / e2e)
 
 ### Tests Improved (if any)
 - What was changed

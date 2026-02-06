@@ -55,7 +55,13 @@ Rules:
 - One run = one skill
 - Skip trivial or one-off fixes
 
-4) Draft the skill (verbose by default)
+4) Dedup check
+Before drafting, search existing skills at `~/.claude/skills/learned/`:
+- Scan filenames and content for overlap with the identified pattern.
+- If a similar skill exists: propose updating it instead of creating a new one.
+- If no overlap: proceed with a new skill.
+
+5) Draft the skill (verbose by default)
 
 Create a single skill draft with this structure (plain text):
 
@@ -64,6 +70,8 @@ name: <descriptive-slug>
 description: Reusable pattern extracted from pantry "<folder>"
 version: 1.0.0
 source: pantry-based-skill-create
+domain: <debugging | performance | architecture | testing | integration | workaround | tooling>
+confidence: <0.0-1.0>
 ---
 
 Title: <Human-friendly title>
@@ -91,20 +99,37 @@ What to double-check.
 When to use:
 Clear trigger conditions for applying this skill again.
 
+When NOT to use:
+Conditions where this pattern would be wrong or harmful.
+
+Evidence:
+What pantry context supported this extraction.
+
 Assumptions:
 Explicit list of assumptions or unknowns.
 
-5) Show draft and ask for confirmation
+6) Show draft and ask for confirmation
 - Print the full draft to the CLI
 - Propose a filename:
   ~/.claude/skills/learned/<descriptive-slug>.md
 - Ask:
   "Save this skill? (yes / no / edit)"
 
-6) Save (only if confirmed)
+7) Save (only if confirmed)
 - If yes: write the file and confirm path
 - If edit: ask what section to modify
 - If no: do nothing
+
+## Confidence Scoring
+
+- **0.1–0.3**: One-off fix that might apply elsewhere.
+- **0.4–0.6**: Seen a couple times. Moderate reusability.
+- **0.7–0.9**: Well-established pattern. High confidence.
+- **1.0**: Reserved. Never assign 1.0.
+
+## Domain Tags
+
+Assign exactly one: debugging, performance, architecture, testing, integration, workaround, tooling.
 
 Safety rules:
 - Never auto-save

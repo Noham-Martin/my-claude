@@ -36,6 +36,13 @@ Look for:
    - Architecture decisions made
    - Integration patterns
 
+## Dedup Check
+
+Before drafting a new skill, search existing skills at `~/.claude/skills/learned/` for similar patterns:
+- Read the filenames and scan for overlap.
+- If a similar skill exists: propose updating it instead of creating a new one.
+- If no overlap: proceed with a new skill.
+
 ## Output Format
 
 Create a skill file at `~/.claude/skills/learned/[pattern-name].md`:
@@ -45,6 +52,8 @@ Create a skill file at `~/.claude/skills/learned/[pattern-name].md`:
 
 **Extracted:** [Date]
 **Context:** [Brief description of when this applies]
+**Domain:** [debugging | performance | architecture | testing | integration | workaround | tooling]
+**Confidence:** [0.0-1.0 — how broadly applicable is this pattern?]
 
 ## Problem
 [What problem this solves - be specific]
@@ -55,17 +64,42 @@ Create a skill file at `~/.claude/skills/learned/[pattern-name].md`:
 ## Example
 [Code example if applicable]
 
+## Evidence
+[What session context led to this extraction — the problem encountered, what was tried, what worked]
+
 ## When to Use
 [Trigger conditions - what should activate this skill]
+
+## When NOT to Use
+[Conditions where this pattern does not apply or could be harmful]
 ```
+
+## Confidence Scoring
+
+- **0.1–0.3**: One-off fix that might apply elsewhere. Low certainty.
+- **0.4–0.6**: Seen this pattern a couple times. Moderate reusability.
+- **0.7–0.9**: Well-established pattern. High confidence it applies broadly.
+- **1.0**: Reserved. Never assign 1.0 — there are always edge cases.
+
+## Domain Tags
+
+Assign exactly one domain:
+- `debugging` — error diagnosis and resolution techniques
+- `performance` — optimization patterns
+- `architecture` — structural decisions and design patterns
+- `testing` — test strategies and testing-related patterns
+- `integration` — cross-system or API integration patterns
+- `workaround` — library/tool/API limitation workarounds
+- `tooling` — build tools, CI/CD, developer experience
 
 ## Process
 
 1. Review the session for extractable patterns
 2. Identify the most valuable/reusable insight
-3. Draft the skill file
-4. Ask user to confirm before saving
-5. Save to `~/.claude/skills/learned/`
+3. Run the dedup check against existing skills
+4. Draft the skill file with domain and confidence
+5. Ask user to confirm before saving
+6. Save to `~/.claude/skills/learned/`
 
 ## Notes
 

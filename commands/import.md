@@ -1,33 +1,32 @@
 ---
-description: Import context from dd-pantry folder
-argument-hint: --<folder>
+description: Import context from dd-pantry folder or project .planning/ directory
+argument-hint: --<folder> | --project
 allowed-tools: [Read, Glob, Grep, Bash]
 ---
 
-# /import — Load pantry context from dd-pantry folder
+# /import — Load context from pantry or project
 
 You are running the /import command.
 
 ## Usage
-/import --<folder>
+- `/import --<folder>` — import from dd-pantry
+- `/import --project` — import from current project's `.planning/` directory
 
-## Target path
-/Users/noham.martin/dd/dd-pantry/<folder>
-
-Replace `<folder>` with the value passed after `--`.
+## Target Paths
+- Pantry: `/Users/noham.martin/dd/dd-pantry/<folder>`
+- Project: `./.planning/` (relative to current working directory)
 
 ## Goals
 - Ensure the target folder exists (create it if missing).
 - Read **every file** in that folder (recursively).
 - Build a thorough, structured understanding of the context.
-- Output a **detailed Markdown digest** that the user can use as “loaded context”.
+- Output a **detailed Markdown digest** that the user can use as "loaded context".
 
 ## Process (must follow in order)
 
-### 1) Resolve folder argument
-- Parse the command invocation to extract `<folder>` from `--<folder>`.
-- Construct the absolute path:
-  `/Users/noham.martin/dd/dd-pantry/<folder>`
+### 1) Resolve target path
+- If `--project` flag: use `./.planning/` relative to the current working directory.
+- Otherwise: parse `<folder>` from `--<folder>` and construct `/Users/noham.martin/dd/dd-pantry/<folder>`.
 
 ### 2) Ensure folder exists
 - If the folder does not exist: create it (including parents).
@@ -47,7 +46,7 @@ Replace `<folder>` with the value passed after `--`.
   - key facts (decisions, constraints, conventions, TODOs)
   - any open questions or contradictions between files
 
-### 5) Produce the “Loaded Context Digest” (Markdown output only)
+### 5) Produce the "Loaded Context Digest" (Markdown output only)
 Always output in Markdown and include:
 
 #### A) Folder status
@@ -80,4 +79,4 @@ A table:
 - Output MUST be Markdown.
 - Prefer too much detail over too little.
 - Do not hallucinate file contents; only use what you read.
-- If no files exist, output a “No existing context yet” section plus a suggested starter structure.
+- If no files exist, output a "No existing context yet" section plus a suggested starter structure.

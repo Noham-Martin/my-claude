@@ -1,20 +1,20 @@
 ---
-description: Export context to dd-pantry folder
-argument-hint: --<folder>
+description: Export context to dd-pantry folder or project .planning/ directory
+argument-hint: --<folder> | --project
 allowed-tools: [Read, Glob, Grep, Bash, Write]
 ---
 
-# /export — Write new pantry context file into dd-pantry folder
+# /export — Write context to pantry or project
 
 You are running the /export command.
 
 ## Usage
-/export --<folder>
+- `/export --<folder>` — export to dd-pantry
+- `/export --project` — export to current project's `.planning/` directory
 
-## Target path
-/Users/noham.martin/dd/dd-pantry/<folder>
-
-Replace `<folder>` with the value passed after `--`.
+## Target Paths
+- Pantry: `/Users/noham.martin/dd/dd-pantry/<folder>`
+- Project: `./.planning/` (relative to current working directory)
 
 ## Goals
 - Ensure the target folder exists (create it if missing).
@@ -27,14 +27,13 @@ Replace `<folder>` with the value passed after `--`.
 
 ## Process (must follow in order)
 
-### 1) Resolve folder argument
-- Parse the command invocation to extract `<folder>` from `--<folder>`.
-- Construct the absolute path:
-  `/Users/noham.martin/dd/dd-pantry/<folder>`
+### 1) Resolve target path
+- If `--project` flag: use `./.planning/` relative to the current working directory.
+- Otherwise: parse `<folder>` from `--<folder>` and construct `/Users/noham.martin/dd/dd-pantry/<folder>`.
 
 ### 2) Ensure folder exists
 - If the folder does not exist: create it (including parents).
-- If it is newly created, treat this as “first time”.
+- If it is newly created, treat this as "first time".
 
 ### 3) Determine next file number
 - List files in the folder (non-recursive is enough for numbering).
@@ -50,7 +49,7 @@ Replace `<folder>` with the value passed after `--`.
   - lowercase
   - words separated by hyphens
   - no spaces
-  - avoid overly generic names like “notes”
+  - avoid overly generic names like "notes"
 Examples:
 - `implementation-plan-feature-x`
 - `architecture-decisions-metrics-v2`
@@ -60,13 +59,22 @@ Examples:
 ### 5) Create the new file
 - Filename:
   `NN-<name-of-file>.md`
-- Write it to:
-  `/Users/noham.martin/dd/dd-pantry/<folder>/NN-<name-of-file>.md`
+- Write it to the resolved target path.
 
 ### 6) What to write (Markdown only, very detailed)
-Write an “export note” that is maximally useful later. Prefer too much detail over too little.
+Write an "export note" that is maximally useful later. Prefer too much detail over too little.
 
-Include these sections (in this order):
+Include YAML frontmatter:
+
+```yaml
+---
+date: YYYY-MM-DD
+author: noham
+tags: [relevant, topic, tags]
+---
+```
+
+Then include these sections (in this order):
 
 # Title (human-friendly)
 - Include the feature/topic and the date (YYYY-MM-DD)
