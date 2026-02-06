@@ -1,12 +1,7 @@
 {
   "name": "nohamm-workflow",
-  "version": "2.0.0",
   "description": "Complete development workflow ecosystem: agents, orchestration, session management, context engineering, and quality enforcement",
   "author": {
     "name": "Noham Martin"
-  },
-  "commands": "./commands/",
-  "agents": "./agents/",
-  "skills": "./skills/",
-  "hooks": "./hooks/hooks.json"
+  }
 }
