@@ -1,5 +1,5 @@
 {
-  "description": "nohamm-workflow quality enforcement and session tracking hooks",
+  "description": "nohamm-workflow safety hooks",
   "hooks": {
     "PreToolUse": [
       {
@@ -10,31 +10,6 @@
             "command": "${CLAUDE_PLUGIN_ROOT}/scripts/safety-guard.sh",
             "timeout": 5,
             "statusMessage": "Checking command safety..."
-          }
-        ]
-      },
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/branch-guard.sh",
-            "timeout": 5,
-            "statusMessage": "Checking branch protection..."
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/lint-check.sh",
-            "timeout": 30,
-            "async": true,
-            "statusMessage": "Running lint check..."
           }
         ]
       }

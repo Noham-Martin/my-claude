@@ -1,15 +1,8 @@
 # Agent Routing Rules
 
-## When to Auto-Invoke Agents
+## Agents Are Opt-In
 
-The following agents should be invoked automatically based on the task context:
-
-- **planner**: Complex feature requests, multi-file changes, tasks requiring exploration before implementation.
-- **reviewer**: After code changes when review is needed, or when asked to review a PR.
-- **tdd-guide**: Bug fixes, test backfilling, any task involving test creation.
-- **debugger**: When investigating bugs, unexpected behavior, or failures.
-- **security-reviewer**: Changes touching authentication, authorization, user input handling, API endpoints, or sensitive data.
-- **build-resolver**: When the build is failing.
+Agents run only when explicitly invoked via commands (`/orchestrate`, `/debug`, `/code-review`, `/plan`, `/tests`, `/build-fix`). Do NOT auto-spawn agents for regular tasks.
 
 ## Model Routing
 
@@ -35,11 +28,6 @@ When agents pass work to each other (e.g., via `/orchestrate`), use the standard
 ### Unresolved Questions
 ### Recommendations for Next Agent
 ```
-
-Each agent receives:
-1. The user's original request.
-2. All previous handoff documents in the chain.
-3. Clear instructions on what THIS agent should focus on.
 
 ## Context Hygiene
 

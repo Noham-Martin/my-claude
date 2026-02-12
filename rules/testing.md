@@ -1,46 +1,16 @@
 # Testing Rules
 
-## Test-Driven Development (TDD)
+## Default Behavior
 
-When tests are applicable, the agent MUST follow this order strictly:
+Follow the project's existing testing conventions. Match the same level of coverage, test types, assertion style, and mocking strategy used in similar parts of the codebase.
 
-1. **Write tests first**
-   - Define the expected behavior before writing any implementation.
-   - Tests must reflect real usage, not hypothetical behavior.
+When adding tests, look at adjacent test files first to understand the expected patterns.
 
-2. **Run tests and verify failure**
-   - Confirm that tests fail for the correct reason.
-   - Do NOT proceed if tests pass unexpectedly.
+## TDD Discipline
 
-3. **Implement the minimal solution**
-   - Write only the code required to make the tests pass.
-   - Avoid premature optimization or refactoring at this stage.
-
-4. **Run tests and verify success**
-   - All newly added tests must pass.
-   - Existing tests must not regress.
-
-5. **Improve tests and refactor**
-   - Clarify test names, structure, and assertions.
-   - Remove duplication and improve readability.
-   - Refactor implementation only if it preserves behavior.
-
-6. **Re-run tests after refactor**
-   - All tests must still pass.
-   - Re-run the full relevant test suite.
-
----
+Strict TDD (red-green-refactor) is used when explicitly requested via `/tests` or `/orchestrate`. Outside of those commands, use your judgment — write tests when they add value, skip ceremony when the change is trivial.
 
 ## Coverage Rules
 
-- Coverage expectations must be **derived from the existing codebase**, not invented.
-- Before adding tests, inspect **similar features or modules** and follow:
-  - The same level of coverage
-  - The same types of tests (unit, integration, e2e)
-- **Do NOT introduce new kinds of tests** if they are not already used in similar areas.
-- Match existing conventions for:
-  - Test structure
-  - Assertion style
-  - Mocking strategy
-
-The goal is **consistency with the codebase**, not maximal coverage.
+- Coverage expectations must be derived from the existing codebase, not invented.
+- Do NOT introduce new kinds of tests if they are not already used in similar areas.
