@@ -12,10 +12,6 @@ allowed-tools: []
 | `/plan --<task>` | Generate detailed end-to-end implementation plan |
 | `/build-fix` | Incrementally fix build errors one at a time |
 | `/tests` | Backfill missing tests based on current branch changes |
-| `/debug --<issue>` | Systematic debugging with persistent state |
-| `/debug --list` | List all debug sessions (active and resolved) |
-| `/debug --resume [--<name>]` | Resume a debug session (by name or most recent) |
-| `/debug --delete --<name>` | Delete a debug session |
 | `/verify [--quick\|--full\|--pre-pr]` | Quality gate: build, tests, lint, security, git status |
 
 ## Review
@@ -41,6 +37,7 @@ allowed-tools: []
 | `/learn` | Extract reusable patterns from current session |
 | `/import --<folder>` | Import context from dd-pantry |
 | `/export --<folder>` | Export context to dd-pantry |
+| `/pantry-list` | List all pantry projects |
 | `/skill-create --<folder>` | Create a reusable skill from pantry context |
 
 ## Jira

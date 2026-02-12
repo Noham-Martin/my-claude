@@ -16,20 +16,6 @@ Save and restore working context. State lives in `.planning/sessions/`.
 | `/session-resume` | Resume most recent session |
 | `/session-delete --<label>` | Delete a saved session |
 
-## Debug Sessions
-
-Named, persistent debug investigations. State lives in `.planning/debug/`.
-
-| Command | What it does |
-|---------|-------------|
-| `/debug --<issue>` | Start a new debug session |
-| `/debug --list` | List all debug sessions (active + resolved) |
-| `/debug --resume` | Resume most recent active session |
-| `/debug --resume --<name>` | Resume a specific session by slug |
-| `/debug --delete --<name>` | Delete a debug session |
-
-Each session is a file (`debug-YYYY-MM-DD-<slug>.md`) with immutable symptoms, ranked hypotheses, and append-only evidence. Resolved sessions move to `.planning/debug/resolved/`.
-
 ## Review
 
 | Command | What it does |
@@ -44,7 +30,7 @@ Chain agents end-to-end. **Bold steps** are implementation pauses — Claude pre
 | Command | Chain |
 |---------|-------|
 | `/orchestrate --feature --<prompt>` | planner → **implement** → tdd-guide → reviewer → security-reviewer |
-| `/orchestrate --bugfix --<prompt>` | debugger → **implement fix** → tdd-guide → reviewer |
+| `/orchestrate --bugfix --<prompt>` | planner → **implement fix** → tdd-guide → reviewer |
 | `/orchestrate --refactor --<prompt>` | planner → **implement** → tdd-guide → reviewer |
 | `/orchestrate --review` | reviewer → security-reviewer |
 
@@ -56,6 +42,7 @@ Persistent cross-project knowledge library at `~/dd/dd-pantry/`. Auto-updated by
 |---------|-------------|
 | `/import --<folder>` | Load context from pantry |
 | `/export --<folder>` | Save context to pantry |
+| `/pantry-list` | List all pantry projects |
 | `/learn` | Extract reusable patterns from current session |
 | `/skill-create --<folder>` | Turn pantry notes into a reusable skill |
 

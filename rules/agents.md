@@ -2,12 +2,12 @@
 
 ## Agents Are Opt-In
 
-Agents run only when explicitly invoked via commands (`/orchestrate`, `/debug`, `/code-review`, `/plan`, `/tests`, `/build-fix`). Do NOT auto-spawn agents for regular tasks.
+Agents run only when explicitly invoked via commands (`/orchestrate`, `/code-review`, `/plan`, `/tests`, `/build-fix`). Do NOT auto-spawn agents for regular tasks.
 
 ## Model Routing
 
 - Use **opus** for planning and architecture decisions (planner agent).
-- Use **sonnet** for everything else (reviewer, tdd-guide, debugger, security-reviewer, build-resolver).
+- Use **sonnet** for everything else (reviewer, tdd-guide, security-reviewer, build-resolver).
 
 ## Parallel Execution
 

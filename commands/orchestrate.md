@@ -24,7 +24,7 @@ The prompt is passed to the first agent in the chain as its task. If no prompt i
 | Preset | Chain | Use When |
 |--------|-------|----------|
 | `feature` | planner → **implement** → tdd-guide → reviewer → security-reviewer | Building a new feature end-to-end |
-| `bugfix` | debugger → **implement fix** → tdd-guide → reviewer | Fixing a bug with proper test coverage |
+| `bugfix` | planner → **implement fix** → tdd-guide → reviewer | Fixing a bug with proper test coverage |
 | `refactor` | planner → **implement** → tdd-guide → reviewer | Restructuring code safely |
 | `review` | reviewer → security-reviewer | Reviewing before merge |
 

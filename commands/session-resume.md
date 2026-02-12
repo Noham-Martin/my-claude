@@ -85,16 +85,6 @@ Suggested next actions:
 3. <third step>
 ```
 
-If there are active debug sessions in `.planning/debug/`, mention them with their name:
-```
-Note: Active debug session found: <slug> — run /debug --resume --<slug> to continue.
-```
-
-If multiple active debug sessions exist, list all of them:
-```
-Note: 2 active debug sessions found. Run /debug --list to see all.
-```
-
 ## Rules
 
 - This command is READ-ONLY. It does not modify any files or git state.
