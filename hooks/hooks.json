@@ -1,29 +1,4 @@
 {
-  "description": "nohamm-workflow safety hooks",
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/safety-guard.sh",
-            "timeout": 5,
-            "statusMessage": "Checking command safety..."
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/stop-reminder.sh",
-            "timeout": 5
-          }
-        ]
-      }
-    ]
-  }
+  "description": "nohamm-workflow hooks",
+  "hooks": {}
 }
