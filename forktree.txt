@@ -1,0 +1,310 @@
+#!/usr/bin/env python3
+"""
+forktree - Create a temporary git worktree, execute a command, commit results, and tear down.
+"""
+
+import argparse
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+
+class ForktreeError(Exception):
+    """Base exception for forktree errors."""
+    pass
+
+
+def run_command(cmd, cwd=None, check=True, capture_output=False, env=None):
+    """Run a shell command and return the result."""
+    try:
+        result = subprocess.run(
+            cmd,
+            cwd=cwd,
+            check=check,
+            capture_output=capture_output,
+            text=True,
+            env=env
+        )
+        return result
+    except subprocess.CalledProcessError as e:
+        if check:
+            raise ForktreeError(f"Command failed: {' '.join(cmd)}\n{e.stderr if e.stderr else ''}")
+        return e
+
+
+def find_git_root():
+    """Find the root directory of the git repository."""
+    try:
+        result = run_command(
+            ["git", "rev-parse", "--show-toplevel"],
+            capture_output=True
+        )
+        return result.stdout.strip()
+    except ForktreeError:
+        raise ForktreeError("Not in a git repository")
+
+
+def get_repo_name(git_root):
+    """Get the repository name from the git root path."""
+    return Path(git_root).name
+
+
+def sanitize_branch_name(branch_name):
+    """Convert a branch name to a valid directory name."""
+    # Replace / with - and other problematic characters
+    sanitized = branch_name.replace("/", "-")
+    sanitized = sanitized.replace("\\", "-")
+    sanitized = sanitized.replace(" ", "_")
+    sanitized = sanitized.replace(":", "-")
+    # Remove any other characters that might cause issues
+    sanitized = "".join(c for c in sanitized if c.isalnum() or c in "-_.")
+    return sanitized
+
+
+def get_worktree_path(branch_name):
+    """Get the path for the worktree based on the branch name."""
+    git_root = find_git_root()
+    repo_name = get_repo_name(git_root)
+    sanitized_branch = sanitize_branch_name(branch_name)
+
+    # Create path: ~/.forktree/<repo-name>/<sanitized-branch>/
+    forktree_base = Path.home() / ".forktree"
+    worktree_path = forktree_base / repo_name / sanitized_branch
+
+    return str(worktree_path)
+
+
+def find_hook(git_root, hook_name):
+    """Find a git hook by name. Returns the path if it exists and is executable."""
+    hooks_dir = Path(git_root) / ".git" / "hooks"
+    hook_path = hooks_dir / hook_name
+
+    if hook_path.exists() and os.access(hook_path, os.X_OK):
+        return hook_path
+    return None
+
+
+def run_hook(hook_name, env_vars, cwd, git_root=None):
+    """Run a hook if it exists."""
+    if git_root is None:
+        git_root = find_git_root()
+    hook_path = find_hook(git_root, hook_name)
+
+    if hook_path:
+        print(f"Running hook: {hook_name}")
+        hook_env = os.environ.copy()
+        hook_env.update(env_vars)
+
+        try:
+            run_command([str(hook_path)], cwd=cwd, env=hook_env)
+        except ForktreeError as e:
+            raise ForktreeError(f"Hook {hook_name} failed: {e}")
+
+
+def has_uncommitted_changes(cwd):
+    """Check if there are uncommitted changes in the worktree."""
+    result = run_command(
+        ["git", "status", "--porcelain"],
+        cwd=cwd,
+        capture_output=True
+    )
+    return bool(result.stdout.strip())
+
+
+def commit_changes(commit_message, cwd):
+    """Commit any uncommitted changes."""
+    if not has_uncommitted_changes(cwd):
+        print("No changes to commit")
+        return
+
+    # Stage all changes
+    run_command(["git", "add", "-A"], cwd=cwd)
+
+    # Commit with provided message or open editor
+    if commit_message:
+        run_command(
+            ["git", "commit", "-m", commit_message],
+            cwd=cwd
+        )
+    else:
+        # Let git open the default editor
+        run_command(["git", "commit"], cwd=cwd)
+
+
+def create_branch(branch_name):
+    """Create a new branch."""
+    try:
+        run_command(["git", "branch", branch_name])
+    except ForktreeError as e:
+        raise ForktreeError(f"Failed to create branch: {e}")
+
+
+def create_worktree(branch_name, worktree_path):
+    """Create a git worktree for the specified branch."""
+    cmd = ["git", "worktree", "add", worktree_path, branch_name]
+
+    try:
+        run_command(cmd)
+    except ForktreeError as e:
+        raise ForktreeError(f"Failed to create worktree: {e}")
+
+
+def remove_worktree(worktree_path):
+    """Remove a git worktree."""
+    try:
+        run_command(["git", "worktree", "remove", "--force", worktree_path])
+    except ForktreeError as e:
+        print(f"Warning: Failed to remove worktree: {e}", file=sys.stderr)
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Create a temporary git worktree, execute a command, commit results, and tear down.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  forktree my-branch ls -la
+  forktree -c new-feature npm test
+  forktree -m "Update docs" docs-branch make docs
+
+Hooks:
+  The following git hooks are supported:
+    - before-forktree-fork: Run in original directory after branch creation but before worktree creation
+    - after-forktree-fork:  Run in worktree after creation
+    - before-forktree-join: Run in worktree before committing and teardown
+    - after-forktree-join:  Run in original directory after teardown
+
+  Place these in .git/hooks/ and make them executable.
+"""
+    )
+
+    parser.add_argument(
+        "-c",
+        "--create",
+        action="store_true",
+        help="Create the branch if it doesn't exist"
+    )
+
+    parser.add_argument(
+        "-m",
+        "--message",
+        metavar="MESSAGE",
+        help="Commit message (if not provided, editor will open)"
+    )
+
+    parser.add_argument(
+        "branch",
+        help="Branch name to use for the worktree"
+    )
+
+    parser.add_argument(
+        "command",
+        nargs="+",
+        help="Command to execute in the worktree"
+    )
+
+    args = parser.parse_args()
+
+    # Get the original directory and git root
+    original_dir = os.getcwd()
+
+    try:
+        git_root = find_git_root()
+    except ForktreeError as e:
+        print(f"Error: {e}", file=sys.stderr)
+        return 1
+
+    # Get the worktree path based on branch name
+    worktree_path = get_worktree_path(args.branch)
+
+    # Ensure parent directory exists
+    Path(worktree_path).parent.mkdir(parents=True, exist_ok=True)
+
+    # Prepare environment variables for hooks
+    env_vars = {
+        "FORKTREE_BRANCH_NAME": args.branch,
+        "FORKTREE_ORIGINAL_DIR": original_dir,
+        "FORKTREE_WORKTREE_DIR": worktree_path,
+        "FORKTREE_CREATE_BRANCH": "true" if args.create else "false",
+        "FORKTREE_COMMIT_MESSAGE": args.message or "",
+    }
+
+    # Track whether we should cleanup the worktree
+    # Only cleanup if commit succeeds and worktree is clean
+    should_cleanup = False
+
+    try:
+        # Create branch if requested
+        if args.create:
+            print(f"Creating branch '{args.branch}'")
+            create_branch(args.branch)
+
+        # Run before-forktree-fork hook
+        run_hook("before-forktree-fork", env_vars, original_dir, git_root)
+
+        # Create the worktree
+        print(f"Creating worktree for branch '{args.branch}' at {worktree_path}")
+        create_worktree(args.branch, worktree_path)
+
+        # Run after-forktree-fork hook
+        run_hook("after-forktree-fork", env_vars, worktree_path, git_root)
+
+        # Execute the command in the worktree
+        print(f"Executing command: {' '.join(args.command)}")
+        run_command(args.command, cwd=worktree_path)
+
+        # Commit any changes
+        print("Committing changes...")
+        commit_changes(args.message, worktree_path)
+
+        # Run before-forktree-join hook
+        run_hook("before-forktree-join", env_vars, worktree_path, git_root)
+
+        # Verify worktree is clean after commit
+        if has_uncommitted_changes(worktree_path):
+            raise ForktreeError(
+                "Worktree still has uncommitted changes after commit. "
+                "Some files may not have been committed."
+            )
+
+        # Only cleanup if we've successfully committed and worktree is clean
+        should_cleanup = True
+        print("Success!")
+
+    except ForktreeError as e:
+        print(f"Error: {e}", file=sys.stderr)
+        return 1
+
+    except KeyboardInterrupt:
+        print("\nInterrupted by user", file=sys.stderr)
+        return 130
+
+    finally:
+        os.chdir(original_dir)
+
+        if should_cleanup:
+            # Clean up the worktree only if commit succeeded and worktree is clean
+            print(f"Cleaning up worktree...")
+            remove_worktree(worktree_path)
+
+            # Run after-forktree-join hook
+            try:
+                run_hook("after-forktree-join", env_vars, original_dir, git_root)
+            except ForktreeError as e:
+                print(f"Warning: after-forktree-join hook failed: {e}", file=sys.stderr)
+        else:
+            # Preserve worktree when commit failed or worktree is dirty
+            print("\n" + "="*70, file=sys.stderr)
+            print("WARNING: Worktree preserved due to commit failure or uncommitted changes", file=sys.stderr)
+            print(f"Worktree location: {worktree_path}", file=sys.stderr)
+            print("\nTo manually clean up when ready, run:", file=sys.stderr)
+            print(f"  git worktree remove --force {worktree_path}", file=sys.stderr)
+            print("="*70 + "\n", file=sys.stderr)
+
+    # Return 0 only if cleanup succeeded, otherwise return 2
+    return 0 if should_cleanup else 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())
