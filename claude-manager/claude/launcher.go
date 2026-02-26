@@ -12,14 +12,17 @@ import (
 // The .command script writes its shell PID to a sidecar file.
 // cm uses the PID to detect liveness and to close the window.
 func LaunchInTerminal(instanceID, dir string, args ...string) error {
-	claudeCmd := "claude"
+	home, _ := os.UserHomeDir()
+	pluginDir := filepath.Join(home, ".claude", "plugins", "nohamm-workflow")
+
+	claudeCmd := fmt.Sprintf("claude --plugin-dir %s", shellEscape(pluginDir))
 	if len(args) > 0 {
-		claudeCmd = "claude " + strings.Join(args, " ")
+		claudeCmd += " " + strings.Join(args, " ")
 	}
 
 	pidDir := PidDir()
 
-	script := fmt.Sprintf(`#!/bin/bash
+	script := fmt.Sprintf(`#!/bin/zsh -l
 unset CLAUDECODE
 mkdir -p %q
 echo $$ > %q
@@ -51,12 +54,6 @@ cd %s
 // instance ID (by matching the .command filename in the window title) and
 // closes it via System Events.
 func CloseTerminalWindow(instanceID string) {
-	needle := instanceID
-	debugPath := filepath.Join(os.TempDir(), "claude-manager", "close-debug.log")
-
-	// Log that we were called
-	_ = os.WriteFile(debugPath, []byte(fmt.Sprintf("called with: %s\n", needle)), 0644)
-
 	script := fmt.Sprintf(`
 tell application "System Events"
 	tell process "Terminal"
@@ -78,25 +75,16 @@ tell application "System Events"
 		end repeat
 	end tell
 end tell
-return "not found"`, needle)
+return "not found"`, instanceID)
 
 	cmd := exec.Command("osascript", "-e", script)
-	out, err := cmd.CombinedOutput()
-
-	// Append result
-	f, _ := os.OpenFile(debugPath, os.O_APPEND|os.O_WRONLY, 0644)
-	if f != nil {
-		fmt.Fprintf(f, "result: %s\nerr: %v\n", string(out), err)
-		f.Close()
-	}
+	_, _ = cmd.CombinedOutput()
 }
 
 // FocusTerminalWindow finds the Terminal.app window associated with the given
 // instance ID (by matching the .command filename in the window name via System
 // Events) and brings it to the front.
 func FocusTerminalWindow(instanceID string) bool {
-	needle := instanceID
-
 	script := fmt.Sprintf(`
 tell application "Terminal" to activate
 tell application "System Events"
@@ -109,7 +97,7 @@ tell application "System Events"
 		end repeat
 	end tell
 end tell
-return "not found"`, needle)
+return "not found"`, instanceID)
 
 	cmd := exec.Command("osascript", "-e", script)
 	out, err := cmd.CombinedOutput()

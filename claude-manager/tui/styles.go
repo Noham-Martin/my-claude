@@ -3,7 +3,6 @@ package tui
 import "github.com/charmbracelet/lipgloss"
 
 var (
-	subtle    = lipgloss.AdaptiveColor{Light: "#D9DCCF", Dark: "#383838"}
 	highlight = lipgloss.AdaptiveColor{Light: "#874BFD", Dark: "#7D56F4"}
 	special   = lipgloss.AdaptiveColor{Light: "#43BF6D", Dark: "#73F59F"}
 	dimmed    = lipgloss.AdaptiveColor{Light: "#A49FA5", Dark: "#777777"}
@@ -49,9 +48,4 @@ var (
 	inputStyle = lipgloss.NewStyle().
 			Foreground(highlight).
 			Bold(true)
-
-	borderStyle = lipgloss.NewStyle().
-			Border(lipgloss.RoundedBorder()).
-			BorderForeground(subtle).
-			Padding(1, 2)
 )

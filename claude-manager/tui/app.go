@@ -2,6 +2,7 @@ package tui
 
 import (
 	"fmt"
+	"path/filepath"
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -191,8 +192,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) handleInput(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
-	switch m.input {
-	case inputProjectPicker:
+	if m.input == inputProjectPicker {
 		return m.handleProjectPicker(msg)
 	}
 
@@ -203,26 +203,7 @@ func (m model) handleInput(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		return m, nil
 
 	case "enter":
-		switch m.input {
-		case inputBranch:
-			m.input = inputNone
-			branch := strings.TrimSpace(m.inputText)
-			m.inputText = ""
-			if branch == "" {
-				return m, nil
-			}
-			return m.launchWorktree(m.pickerDir, branch)
-
-		case inputConfirmDelete:
-			m.input = inputNone
-			if strings.ToLower(strings.TrimSpace(m.inputText)) == "y" {
-				return m.deleteSelected()
-			}
-			m.inputText = ""
-			return m, nil
-
-		}
-		return m, nil
+		return m.submitInput()
 
 	case "backspace":
 		if len(m.inputText) > 0 {
@@ -234,6 +215,30 @@ func (m model) handleInput(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		if len(msg.String()) == 1 {
 			m.inputText += msg.String()
 		}
+		return m, nil
+	}
+}
+
+func (m model) submitInput() (tea.Model, tea.Cmd) {
+	switch m.input {
+	case inputBranch:
+		m.input = inputNone
+		branch := strings.TrimSpace(m.inputText)
+		m.inputText = ""
+		if branch == "" {
+			return m, nil
+		}
+		return m.launchWorktree(m.pickerDir, branch)
+
+	case inputConfirmDelete:
+		m.input = inputNone
+		if strings.ToLower(strings.TrimSpace(m.inputText)) == "y" {
+			return m.deleteSelected()
+		}
+		m.inputText = ""
+		return m, nil
+
+	default:
 		return m, nil
 	}
 }
@@ -308,7 +313,7 @@ func (m model) launchClaude(dir string) (model, tea.Cmd) {
 	}
 
 	_, _ = claude.AddInstance(id, gitRoot, branch, "")
-	m.status = fmt.Sprintf("Launched Claude in %s", m.instances.projectName(gitRoot))
+	m.status = fmt.Sprintf("Launched Claude in %s", filepath.Base(gitRoot))
 	m.instances = reloadInstances(m.instances)
 	return m, nil
 }
@@ -459,9 +464,9 @@ func (m model) View() string {
 
 	b.WriteString("\n")
 	if m.activeTab == tabSessions {
-		b.WriteString(helpStyle.Render("[n] new claude  [w] worktree  [r] resume  [d] delete  [tab] switch  [q] quit"))
+		b.WriteString(helpStyle.Render("[r] resume  [d] delete  [enter] view  [tab] switch  [q] quit"))
 	} else {
-		b.WriteString(helpStyle.Render("[n] new claude  [w] worktree  [d] kill  [tab] switch  [q] quit"))
+		b.WriteString(helpStyle.Render("[n] new claude  [w] worktree  [enter] focus  [d] kill  [tab] switch  [q] quit"))
 	}
 
 	return b.String()

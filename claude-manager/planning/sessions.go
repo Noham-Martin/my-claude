@@ -101,13 +101,28 @@ func extractNextSteps(body string) []string {
 			}
 			if strings.HasPrefix(trimmed, "- ") || strings.HasPrefix(trimmed, "* ") {
 				steps = append(steps, strings.TrimSpace(trimmed[2:]))
-			} else if len(trimmed) > 2 && trimmed[0] >= '0' && trimmed[0] <= '9' && trimmed[1] == '.' {
-				steps = append(steps, strings.TrimSpace(trimmed[2:]))
+			} else if item, ok := parseNumberedItem(trimmed); ok {
+				steps = append(steps, item)
 			}
 		}
 	}
 
 	return steps
+}
+
+// parseNumberedItem checks if a line matches "N. text" (e.g. "1. foo", "12. bar")
+// and returns the text after the dot.
+func parseNumberedItem(line string) (string, bool) {
+	for i, c := range line {
+		if c >= '0' && c <= '9' {
+			continue
+		}
+		if c == '.' && i > 0 {
+			return strings.TrimSpace(line[i+1:]), true
+		}
+		break
+	}
+	return "", false
 }
 
 func (s Session) Summary() string {

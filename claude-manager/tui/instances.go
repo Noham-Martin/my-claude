@@ -2,7 +2,6 @@ package tui
 
 import (
 	"fmt"
-	"path/filepath"
 	"strings"
 
 	"github.com/nohamm/claude-manager/claude"
@@ -47,10 +46,6 @@ func (v *instancesView) selected() *claude.Instance {
 		return nil
 	}
 	return &v.instances[v.cursor]
-}
-
-func (v instancesView) projectName(project string) string {
-	return filepath.Base(project)
 }
 
 func (v instancesView) render(width int) string {
