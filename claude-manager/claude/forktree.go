@@ -33,6 +33,11 @@ func CreateWorktree(projectDir, branchName string) (string, error) {
 		}
 	}
 
+	// Reuse existing worktree if the directory already exists
+	if _, err := os.Stat(worktreePath); err == nil {
+		return worktreePath, nil
+	}
+
 	// Create worktree
 	cmd = exec.Command("git", "worktree", "add", worktreePath, branchName)
 	cmd.Dir = projectDir

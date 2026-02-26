@@ -26,6 +26,13 @@ const (
 	inputProjectPicker
 )
 
+type pickerIntent int
+
+const (
+	intentNewClaude pickerIntent = iota
+	intentWorktree
+)
+
 type model struct {
 	projectDir string
 	width      int
@@ -39,6 +46,9 @@ type model struct {
 	inputText string
 	status    string
 	err       string
+
+	pickerIntent pickerIntent
+	pickerDir    string
 
 	projects      []claude.Project
 	projectCursor int
@@ -123,6 +133,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case "n":
 			if m.activeTab == tabInstances {
+				m.pickerIntent = intentNewClaude
 				m.input = inputProjectPicker
 				m.projectCursor = 0
 				m.projects, _ = claude.LoadProjects()
@@ -133,10 +144,15 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, nil
 
 		case "w":
-			m.input = inputBranch
-			m.inputText = ""
-			m.status = ""
-			m.err = ""
+			if m.activeTab == tabInstances {
+				m.pickerIntent = intentWorktree
+				m.input = inputProjectPicker
+				m.projectCursor = 0
+				m.projects, _ = claude.LoadProjects()
+				m.status = ""
+				m.err = ""
+				return m, nil
+			}
 			return m, nil
 
 		case "d":
@@ -195,7 +211,7 @@ func (m model) handleInput(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 			if branch == "" {
 				return m, nil
 			}
-			return m.launchWorktree(branch)
+			return m.launchWorktree(m.pickerDir, branch)
 
 		case inputConfirmDelete:
 			m.input = inputNone
@@ -244,12 +260,20 @@ func (m model) handleProjectPicker(msg tea.KeyMsg) (model, tea.Cmd) {
 		return m, nil
 
 	case "enter":
-		m.input = inputNone
-		if m.projectCursor == 0 {
-			return m.launchClaude(m.projectDir)
+		dir := m.projectDir
+		if m.projectCursor > 0 {
+			dir = m.projects[m.projectCursor-1].Path
 		}
-		idx := m.projectCursor - 1
-		return m.launchClaude(m.projects[idx].Path)
+
+		if m.pickerIntent == intentWorktree {
+			m.input = inputBranch
+			m.inputText = ""
+			m.pickerDir = dir
+			return m, nil
+		}
+
+		m.input = inputNone
+		return m.launchClaude(dir)
 	}
 
 	return m, nil
@@ -289,8 +313,8 @@ func (m model) launchClaude(dir string) (model, tea.Cmd) {
 	return m, nil
 }
 
-func (m model) launchWorktree(branch string) (model, tea.Cmd) {
-	gitRoot := claude.GetGitRoot(m.projectDir)
+func (m model) launchWorktree(dir, branch string) (model, tea.Cmd) {
+	gitRoot := claude.GetGitRoot(dir)
 	id := claude.NewInstanceID()
 
 	worktreePath, err := claude.CreateWorktree(gitRoot, branch)
@@ -435,9 +459,9 @@ func (m model) View() string {
 
 	b.WriteString("\n")
 	if m.activeTab == tabSessions {
-		b.WriteString(helpStyle.Render("[n] new claude  [w] new+worktree  [r] resume  [d] delete  [tab] switch  [q] quit"))
+		b.WriteString(helpStyle.Render("[n] new claude  [w] worktree  [r] resume  [d] delete  [tab] switch  [q] quit"))
 	} else {
-		b.WriteString(helpStyle.Render("[n] new claude  [w] new+worktree  [d] kill  [tab] switch  [q] quit"))
+		b.WriteString(helpStyle.Render("[n] new claude  [w] worktree  [d] kill  [tab] switch  [q] quit"))
 	}
 
 	return b.String()
